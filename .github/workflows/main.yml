@@ -8,15 +8,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: make
-      run: make
-  
-  deploy:
-    if: github.base_ref == 'master'
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.1.4
-        with:
-          name: ctext
-      
+      run: make      
