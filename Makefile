@@ -1,7 +1,7 @@
 OBJS	= main.o
 SOURCE	= main.c
 HEADER	= 
-OUT	= CText
+OUT	= ctext
 CC	 = gcc
 FLAGS	 = -g -c -Wall -Wextra -Wshadow -Wdouble-promotion -Wformat=2 -Wformat-truncation -Wformat-overflow -Wundef -fno-common -Wconversion -Wunused-parameter
 LFLAGS	 = 
