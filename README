@@ -9,15 +9,14 @@ make
 
 Prepare the project :
 
-```shell
 git clone git@github.com:C-Text/CText.git
 git flow init
-```
+
 
 Create a new feature :
-```shell
+
 git flow feature start <my_feature>
-```
+
 
 Finish a feature :
 Open a Pull Request -> base: develop, compare: feature/<my_feature>
