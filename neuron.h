@@ -9,6 +9,6 @@ typedef struct neuron_t
 
 } neuron;
 
-neuron create_neuron(int num_out_weights);
+neuron create_neuron(long unsigned int num_out_weights);
 
 #endif
