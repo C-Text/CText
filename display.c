@@ -2,6 +2,7 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
 #include <stdio.h>
+#include "pixel_operations.h"
 
 void init_sdl();
 SDL_Surface* load_image(char *path);
@@ -13,20 +14,55 @@ void SDL_FreeSurface(SDL_Surface *surface);
 int main()
 {
 	char str[100];
-   int i;
 
    printf( "Enter the path of an image :");
-   scanf("%s", str);
+   int scan = scanf("%s", str);
+   if (scan == 0)
+   {
+	   errx(1,"Could not initialize SDL: %s.\n", SDL_GetError());
+   }
 
    printf( "\nYou entered: %s", str);
 
-    SDL_Surface* image_surface;
-    SDL_Surface* screen_surface;
+   FILE * file = fopen(str, "r");
+   if (!file){
+	   exit(201);
+   }
+   fseek(file, 0L, SEEK_END);
+   Uint32 res = ftell(file);
+   fclose(file);
+
+    SDL_Surface* image_surface = malloc(res);
+    SDL_Surface* screen_surface = malloc(res);
 
     init_sdl(); 
 
     image_surface = load_image(str);
     screen_surface = display_image(image_surface);
+
+    wait_for_keypressed();
+
+    int w = image_surface->w;
+    int h = image_surface->h;
+    Uint8 r, g, b;
+
+
+    for (int i = 0; i < w; i++)
+    {
+	    for (int j = 0; j < h; j++)
+	    {
+		    Uint32 pixel = get_pixel(image_surface, i,j);
+		    SDL_GetRGB(pixel, image_surface->format, &r, &g, &b);
+		    float average = 0.3*r + 0.59*g + 0.11*b;
+		    r = average;
+		    g = average;
+		    b = average;
+		    pixel = SDL_MapRGB(image_surface->format, r, g, b);
+		    put_pixel(image_surface, i,j, pixel);
+	    }
+    }
+
+    update_surface(screen_surface, image_surface);
 
     wait_for_keypressed();
 
