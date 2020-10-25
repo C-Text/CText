@@ -21,6 +21,10 @@ add_executable(
         src/neuralnetwork/function.c src/neuralnetwork/function.h
         src/neuralnetwork/layer.c src/neuralnetwork/layer.h
         src/util.c src/util.h
+        src/display/pixel_operations.c src/display/pixel_operations.h
+        src/display/display.c src/display/display.h
+        src/preprocessing/grayscale.c src/preprocessing/grayscale.h
+        src/preprocessing/otsu.c src/preprocessing/otsu.h
 )
 
 add_executable(
