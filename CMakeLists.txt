@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 project(CText C)
 
 set(CMAKE_C_STANDARD 99)
@@ -19,6 +19,11 @@ add_executable(
         src/util.c src/util.h
         src/test/test.c src/test/test.h
         src/test/test_method.c src/test/test_method.h
+)
+
+add_executable(
+        CText-seg
+        src/segmentation/segmentation.c src/segmentation/segmentation.h
 )
 
 target_link_libraries(CText m)
