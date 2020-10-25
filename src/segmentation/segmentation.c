@@ -3,11 +3,30 @@
 #include <time.h>
 #include <string.h>
 
-
-void hori_histo(unsigned int ext[], size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
-void vert_histo(size_t upper,size_t lower,unsigned int ext[], size_t sizex, size_t sizey, unsigned char img[sizey][sizex], size_t left, size_t right);
-void letter_seg(size_t upper,size_t lower, size_t left, size_t right, size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
-void word_seg(size_t upper,size_t lower,size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
+void hori_histo(unsigned int ext[],
+                size_t sizex,
+                size_t sizey,
+                unsigned char img[sizey][sizex]);
+void vert_histo(size_t upper,
+                size_t lower,
+                unsigned int ext[],
+                size_t sizex,
+                size_t sizey,
+                unsigned char img[sizey][sizex],
+                size_t left,
+                size_t right);
+void letter_seg(size_t upper,
+                size_t lower,
+                size_t left,
+                size_t right,
+                size_t sizex,
+                size_t sizey,
+                unsigned char img[sizey][sizex]);
+void word_seg(size_t upper,
+              size_t lower,
+              size_t sizex,
+              size_t sizey,
+              unsigned char img[sizey][sizex]);
 void line_seg(size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
 
 
@@ -17,7 +36,7 @@ void line_seg(size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
  * genaration(sadly it appear to be sligthly broken at the moment)
  * 
  */
-/*
+
 void generate( size_t sizex, size_t sizey,unsigned char image[sizey][sizex]) 
 {
     srand((unsigned int)time(NULL));
@@ -37,27 +56,26 @@ void generate( size_t sizex, size_t sizey,unsigned char image[sizey][sizex])
         image[sizey-1][y]=0;
     }
 } 
-*/
-/*
-int main()
-{
-    size_t sizex = 60;
-    size_t sizey = 60;
-    unsigned char image[sizey][sizex];
 
-    //unsigned char image[][4]={ { 0,1,0,1 } , { 1,1,1,1 } ,{ 1,0,0,0 }};
-    
-    //unsigned int test[60];
-    //unsigned int ptest = test;
 
-    generate(sizex,sizey,image);
-    line_seg(sizex,sizey,image);
+int main() {
+  size_t sizex = 60;
+  size_t sizey = 60;
+  unsigned char image[sizey][sizex];
 
-    //printf("%s\n",ext);
+  //unsigned char image[][4]={ { 0,1,0,1 } , { 1,1,1,1 } ,{ 1,0,0,0 }};
 
-    return 0;
+  //unsigned int test[60];
+  //unsigned int ptest = test;
+
+  generate(sizex, sizey, image);
+  line_seg(sizex, sizey, image);
+
+  //printf("%s\n",ext);
+
+  return 0;
 }
-*/
+
 
 /**
  * 
@@ -70,19 +88,19 @@ int main()
  * @param sizey verticale size of the treated image
  * 
  */
-void hori_histo(unsigned int ext[], size_t sizex, size_t sizey, unsigned char img[sizey][sizex])
-{
-    
-    for(unsigned int y = 0 ; y < sizey ; y++)
-    {
-        ext[y]=0;
-        for(unsigned int x = 0; x < sizex ; x++)
-        {
-            ext[y] += img[y][x];
-            //printf("%u",img[y][x]);
-        }
-        //printf("\n");
+void hori_histo(unsigned int ext[],
+                size_t sizex,
+                size_t sizey,
+                unsigned char img[sizey][sizex]) {
+
+  for (unsigned int y = 0; y < sizey; y++) {
+    ext[y] = 0;
+    for (unsigned int x = 0; x < sizex; x++) {
+      ext[y] += img[y][x];
+      //printf("%u",img[y][x]);
     }
+    //printf("\n");
+  }
 }
 
 /**
@@ -95,45 +113,38 @@ void hori_histo(unsigned int ext[], size_t sizex, size_t sizey, unsigned char im
  * @param sizey verticale size of img
  * 
  */
-void line_seg(size_t sizex, size_t sizey, unsigned char img[sizey][sizex])
-{
-    unsigned int ho_histo[sizey];
-    hori_histo(ho_histo,sizex,sizey,img);
-    
-    size_t y=0;
-    size_t upper=0;
-    size_t lower=0;
-    while (y<sizey)
-    {
-        if (ho_histo[y]!=0)
-        {
-            upper = y;
-            while(ho_histo[y]!=0)
-            {
-                y+=1;
-            }
-            lower = y-1;
-            word_seg(upper,lower,sizex,sizey,img);
-        }
+void line_seg(size_t sizex, size_t sizey, unsigned char img[sizey][sizex]) {
+  unsigned int ho_histo[sizey];
+  hori_histo(ho_histo, sizex, sizey, img);
 
-        y+=1;
+  size_t y = 0;
+  size_t upper = 0;
+  size_t lower = 0;
+  while (y < sizey) {
+    if (ho_histo[y] != 0) {
+      upper = y;
+      while (ho_histo[y] != 0) {
+        y += 1;
+      }
+      lower = y - 1;
+      word_seg(upper, lower, sizex, sizey, img);
     }
-    //printf("upper = %lu \nladder = %lu\n",upper,lower);
-    /*
-    for(int i =0; i< 60; i++)
-    {
-        for (unsigned int y = 0; y< ho_histo[i]; y++)
-        {
-            printf("|");
-        }
-        //printf("%u\n",ho_histo[i]);
-        printf("\n");
-    }
-    */
+
+    y += 1;
+  }
+  //printf("upper = %lu \nladder = %lu\n",upper,lower);
+  /*
+  for(int i =0; i< 60; i++)
+  {
+      for (unsigned int y = 0; y< ho_histo[i]; y++)
+      {
+          printf("|");
+      }
+      //printf("%u\n",ho_histo[i]);
+      printf("\n");
+  }
+  */
 }
-
-
-
 
 /**
  * 
@@ -147,62 +158,56 @@ void line_seg(size_t sizex, size_t sizey, unsigned char img[sizey][sizex])
  * @param lower limit the histogram to a precise min in img[][]
  * 
  */
-void word_seg(size_t upper,size_t lower,size_t sizex, size_t sizey, unsigned char img[sizey][sizex])
-{
-    unsigned int ver_histo[sizex];
-    vert_histo(upper,lower,ver_histo,sizex,sizey,img,0,sizex);
+void word_seg(size_t upper,
+              size_t lower,
+              size_t sizex,
+              size_t sizey,
+              unsigned char img[sizey][sizex]) {
+  unsigned int ver_histo[sizex];
+  vert_histo(upper, lower, ver_histo, sizex, sizey, img, 0, sizex);
 
-
-    size_t x = 0;
-    size_t left = 0;
-    size_t right = 0;
-    int space_finder;
-    int nbspace;
-    while (x<sizex)
-    {
-        if (ver_histo[x]!=0)
-        {
-            left = x;
-            space_finder = 1;
-            nbspace = 0;
-            while((space_finder) && ( x<sizex ))
-            {
-                if(ver_histo[x]==0)
-                {
-                    nbspace+=1;
-                    if (nbspace>4)
-                    {
-                        space_finder = 0;
-                        right  = x-nbspace;
-                        //printf("%lu,%lu",left,right);
-                    }
-                }
-                x+=1;
-            }
+  size_t x = 0;
+  size_t left = 0;
+  size_t right = 0;
+  int space_finder;
+  int nbspace;
+  while (x < sizex) {
+    if (ver_histo[x] != 0) {
+      left = x;
+      space_finder = 1;
+      nbspace = 0;
+      while ((space_finder) && (x < sizex)) {
+        if (ver_histo[x] == 0) {
+          nbspace += 1;
+          if (nbspace > 4) {
+            space_finder = 0;
+            right = x - nbspace;
+            //printf("%lu,%lu",left,right);
+          }
         }
-        else
-        {
-            x+=1;
-        }
+        x += 1;
+      }
+    } else {
+      x += 1;
     }
-    printf("%lu,%lu\n",left,right);
+  }
+  printf("%lu,%lu\n", left, right);
 
-    /*
-    for(size_t i =0; i< sizex; i++)
-    {
-        
-        for (unsigned int y = 0; y < ver_histo[i]; y++)
-        {
-            printf("|");
-        }
-        
-        printf("histo(%lu) = %u\n",i,ver_histo[i]);
-        //printf("\n");
-    }
-    */
+  /*
+  for(size_t i =0; i< sizex; i++)
+  {
+
+      for (unsigned int y = 0; y < ver_histo[i]; y++)
+      {
+          printf("|");
+      }
+
+      printf("histo(%lu) = %u\n",i,ver_histo[i]);
+      //printf("\n");
+  }
+  */
 
 }
-
 
 /**
  * 
@@ -219,26 +224,27 @@ void word_seg(size_t upper,size_t lower,size_t sizex, size_t sizey, unsigned cha
  * @param right specify from which indexe to end histogram
  * 
  */
-void vert_histo(size_t upper,size_t lower,unsigned int ext[], size_t sizex, size_t sizey,
- unsigned char img[sizey][sizex],size_t left, size_t right)
-{
-    size_t x, y;
-    for(x = left ; x < right ; x++)
-    {
-        ext[x]=0;
-        //printf("ext(%lu) = %u\n",x,ext[x]);
-        for(y = upper; y < lower ; y++)
-        {
-            
-            ext[x] += img[y][x];
-            //printf("%u",img[y][x]);
-        }
-        //printf("\n");
-        //printf("ext(%lu) = %u\n",x,ext[x]);
+void vert_histo(size_t upper,
+                size_t lower,
+                unsigned int ext[],
+                size_t sizex,
+                size_t sizey,
+                unsigned char img[sizey][sizex],
+                size_t left,
+                size_t right) {
+  size_t x, y;
+  for (x = left; x < right; x++) {
+    ext[x] = 0;
+    //printf("ext(%lu) = %u\n",x,ext[x]);
+    for (y = upper; y < lower; y++) {
+
+      ext[x] += img[y][x];
+      //printf("%u",img[y][x]);
     }
+    //printf("\n");
+    //printf("ext(%lu) = %u\n",x,ext[x]);
+  }
 }
-
-
 
 /**
  * 
@@ -254,30 +260,28 @@ void vert_histo(size_t upper,size_t lower,unsigned int ext[], size_t sizex, size
  * @param right specify from which indexe to end each word
  * 
  */
-void letter_seg(size_t upper,size_t lower, size_t left, size_t right, size_t sizex,
- size_t sizey, unsigned char img[sizey][sizex])
-{
-    unsigned int word_histo[right-left+1];
-    vert_histo(upper,lower,word_histo,sizex,sizey,img,left,right);
+void letter_seg(size_t upper,
+                size_t lower,
+                size_t left,
+                size_t right,
+                size_t sizex,
+                size_t sizey,
+                unsigned char img[sizey][sizex]) {
+  unsigned int word_histo[right - left + 1];
+  vert_histo(upper, lower, word_histo, sizex, sizey, img, left, right);
 
-    size_t x = 0;
-    size_t y = 0;
-    while (x<right-left+1)
-    {
-        if (word_histo[x]!=0)
-        {
-            y = x;
-            while(word_histo[y]!=0)
-            {
-                x+=1;
-            }
-            /* insert call to neural network */
-        }
-        else
-        {
-            x+=1;
-        }
-        
-        
+  size_t x = 0;
+  size_t y = 0;
+  while (x < right - left + 1) {
+    if (word_histo[x] != 0) {
+      y = x;
+      while (word_histo[y] != 0) {
+        x += 1;
+      }
+      /* insert call to neural network */
+    } else {
+      x += 1;
     }
+
+  }
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 project(CText C)
 
 set(CMAKE_C_STANDARD 99)
@@ -39,6 +39,11 @@ add_executable(
         src/display/display.c src/display/display.h
         src/preprocessing/grayscale.c src/preprocessing/grayscale.h
         src/preprocessing/otsu.c src/preprocessing/otsu.h
+)
+
+add_executable(
+        CText-seg
+        src/segmentation/segmentation.c src/segmentation/segmentation.h
 )
 
 target_link_libraries(CText m ${SDL_LIBRARY} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES})
