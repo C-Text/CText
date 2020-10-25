@@ -1,22 +1,33 @@
-CText
+====== CText ======
 
-This is a school project.
+= Clone =
 
-Depandencies :
+git clone https://github.com/C-Text/CText.git
+
+= Dependencies =
 
 gcc
+cmake
 make
 
-Prepare the project :
+= Build =
+cmake .
+make
 
-git clone git@github.com:C-Text/CText.git
+= Launch =
+./CText
+./CText-tests
+
+= Contribute =
+
+git clone https://github.com/C-Text/CText.git
 git flow init
 
 
-Create a new feature :
+= Create a new feature =
 
 git flow feature start <my_feature>
 
 
-Finish a feature :
+= Finish a feature =
 Open a Pull Request -> base: develop, compare: feature/<my_feature>
