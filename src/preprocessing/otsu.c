@@ -7,11 +7,9 @@
 #include <err.h>
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
-#include "pixel_operations.h"
-#include "display.h"
+#include "../display/pixel_operations.h"
+#include "../display/display.h"
 #include "grayscale.h"
-
-
 
 /**
   *Calculation of the median in the histogram between start and end values.
@@ -25,8 +23,6 @@
 int mean(unsigned int *histo, int start, int end) {
   return histo[end - start];
 }
-
-
 
 /**
   *Calculate the sum between start and end (end excluded) of the histogram.
@@ -44,7 +40,6 @@ int sum(unsigned int *histo, int start, int end) {
   return sum;
 }
 
-
 /**
   *Make the grayscale histogram of a given image.
   *
@@ -54,23 +49,18 @@ int sum(unsigned int *histo, int start, int end) {
   *@param image_surface is the given image to make histogram.
   */
 void histo(unsigned int histo[256], unsigned w, unsigned h,
-		SDL_Surface* image_surface)
-{
-	Uint8 gray;
+           SDL_Surface *image_surface) {
+  Uint8 gray;
 
-	for (int i = 0; i < w; i++)
-	{
-		for (int j = 0; j < h; j++)
-		{
-			Uint32 pixel = get_pixel(image_surface, i, j);
-			SDL_GetRGB(pixel, image_surface->format,
-					&gray, &gray, &gray);
-			hist[gray] += 1;
-		}
-	}
+  for (int i = 0; i < w; i++) {
+    for (int j = 0; j < h; j++) {
+      Uint32 pixel = get_pixel(image_surface, i, j);
+      SDL_GetRGB(pixel, image_surface->format,
+                 &gray, &gray, &gray);
+      histo[gray] += 1;
+    }
+  }
 }
-
-
 
 /**
   *Use the otsu's method to calculate the optimal threshold of a grayscale image.
@@ -81,31 +71,26 @@ void histo(unsigned int histo[256], unsigned w, unsigned h,
   *
   *@return the optimal threshold.
   */
-int otsu(unsigned int histo[256], unsigned w, unsigned h)
-{
+int otsu(unsigned int histo[256], unsigned w, unsigned h) {
   double final_thresh = -1.0;
   int final_t = -1;
   double mean_weight = 1.0 / (w * h);
-  for (int t = 1; t < 255; t++)
-  {
-	  double wb = (double) sum(histo, 0, t) * mean_weight;
-	  double wf = (double) sum(histo, t, 255) * mean_weight;
+  for (int t = 1; t < 255; t++) {
+    double wb = (double) sum(histo, 0, t) * mean_weight;
+    double wf = (double) sum(histo, t, 255) * mean_weight;
 
-	  int mub = mean(histo, 0, t);
-	  int muf = mean(histo, t, 255);
+    int mub = mean(histo, 0, t);
+    int muf = mean(histo, t, 255);
 
-	  double value = wb * wf * (mub - muf);
-	  value *= value;
-	  if (value > final_thresh)
-	  {
-		  final_thresh = value;
-		  final_t = t;
-	  }
+    double value = wb * wf * (mub - muf);
+    value *= value;
+    if (value > final_thresh) {
+      final_thresh = value;
+      final_t = t;
+    }
   }
   return final_t;
 }
-
-
 
 /**
   *Complete the binarization matrice (matrice of 1 and 0).
@@ -117,20 +102,17 @@ int otsu(unsigned int histo[256], unsigned w, unsigned h)
   *@param image_surface is the image to binarize.
   */
 void binarization(unsigned int w, unsigned int h, char binarization[w][h],
-		int final_t, SDL_Surface* image_surface)
-{
-	Uint8 average;
-	for (int i = 0; i < w; i++)
-	{
-		for (int j = 0; j < h; j++)
-		{
-			Uint32 pixel = get_pixel(image_surface, i, j);
-			SDL_GetRGB(pixel, image_surface->format, &average,
-					&average, &average);
-			if (average > final_t)
-				binarization[i][j] = 1;
-			else 
-				binarization[i][j] = 0;
-		}
-	}
+                  int final_t, SDL_Surface *image_surface) {
+  Uint8 average;
+  for (int i = 0; i < w; i++) {
+    for (int j = 0; j < h; j++) {
+      Uint32 pixel = get_pixel(image_surface, i, j);
+      SDL_GetRGB(pixel, image_surface->format, &average,
+                 &average, &average);
+      if (average > final_t)
+        binarization[i][j] = 1;
+      else
+        binarization[i][j] = 0;
+    }
+  }
 }

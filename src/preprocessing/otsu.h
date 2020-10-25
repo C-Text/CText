@@ -3,8 +3,11 @@
   *Date: 24/10/2020
   *File's name: otsu.h
   */
-#ifndef OTSU_H
-#define OTSU_H
+
+#ifndef CTEXT_SRC_PREPROCESSING_OTSU_H_
+#define CTEXT_SRC_PREPROCESSING_OTSU_H_
+
+#include "SDL/SDL.h"
 
 /**
  *Calculation of the median in the histogram between start and end values.
@@ -17,8 +20,6 @@
  */
 int mean(unsigned int *histo, int start, int end);
 
-
-
 /**
  *Calculate the sum between start and end (end excluded) of the histogram.
  *
@@ -30,8 +31,6 @@ int mean(unsigned int *histo, int start, int end);
  */
 int sum(unsigned int *histo, int start, int end);
 
-
-
 /**
  *Make the grayscale histogram of a given image.
  *
@@ -41,9 +40,7 @@ int sum(unsigned int *histo, int start, int end);
  *@param image_surface is the given image to make histogram.
  */
 void histo(unsigned int histo[256], unsigned w, unsigned h,
-		SDL_Surface* image_surface);
-
-
+           SDL_Surface *image_surface);
 
 /**
  *Use the otsu's method to calculate the optimal threshold of a grayscale image.
@@ -56,8 +53,6 @@ void histo(unsigned int histo[256], unsigned w, unsigned h,
  */
 int otsu(unsigned int histo[256], unsigned w, unsigned h);
 
-
-
 /**
  *Complete the binarization matrice (matrice of 1 and 0).
  *
@@ -68,7 +63,6 @@ int otsu(unsigned int histo[256], unsigned w, unsigned h);
  *@param image_surface is the image to binarize.
  */
 void binarization(unsigned int w, unsigned int h, char binarization[w][h],
-		int final_t, SDL_Surface* image_surface)
+                  int final_t, SDL_Surface *image_surface);
 
-
-#endif
+#endif //CTEXT_SRC_PREPROCESSING_OTSU_H_

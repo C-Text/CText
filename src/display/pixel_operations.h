@@ -1,14 +1,13 @@
+#ifndef CTEXT_SRC_PREPROCESSING_PIXEL_OPERATIONS_H_
+#define CTEXT_SRC_PREPROCESSING_PIXEL_OPERATIONS_H_
 /**
   *Author: Lise Giraud
   *Date: 22/10/2020
   *File's name: pixel_operations.h
   */
 
-#ifndef PIXEL_OPERATIONS_H_
-#define PIXEL_OPERATIONS_H_
-
 #include <stdlib.h>
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 /**
  *get the pixel on coordonates x y of the image.
@@ -20,8 +19,6 @@
   */
 Uint32 get_pixel(SDL_Surface *surface, unsigned x, unsigned y);
 
-
-
 /**
  *Replace the pixel (x,y) by the new value pixel on a given surface.
  *
@@ -32,8 +29,6 @@ Uint32 get_pixel(SDL_Surface *surface, unsigned x, unsigned y);
  */
 void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel);
 
-
-
 /**
  *Update the "old" surface with its new values.
  *
@@ -41,6 +36,6 @@ void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel);
  *@param screen is the window to update.
  *@param image is the image to update.
  */
-void update_surface(SDL_Surface* screen, SDL_Surface* image);
+void update_surface(SDL_Surface *screen, SDL_Surface *image);
 
-#endif
+#endif //CTEXT_SRC_PREPROCESSING_PIXEL_OPERATIONS_H_

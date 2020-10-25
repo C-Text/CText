@@ -4,14 +4,16 @@
   *File's name: grayscale.h
   */
 
-#ifndef GRAYSCALE_H
-#define GRAYSCALE_H
+#ifndef CTEXT_SRC_PREPROCESSING_GRAYSCALE_H_
+#define CTEXT_SRC_PREPROCESSING_GRAYSCALE_H_
+
+#include "SDL/SDL.h"
 
 /**
   *Convert colored image into grayscale image.
   *
   *@param image_surface is the image to convert into grayscale.
   */
-void grayscale(SDL_Surface* image_surface);
+void grayscale(SDL_Surface *image_surface);
 
-#endif
+#endif //CTEXT_SRC_PREPROCESSING_GRAYSCALE_H_

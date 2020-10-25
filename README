@@ -9,6 +9,9 @@ git clone https://github.com/C-Text/CText.git
 gcc
 cmake
 make
+sdl
+sdl2
+sdl2_image
 
 = Build =
 cmake .

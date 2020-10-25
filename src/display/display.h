@@ -3,17 +3,15 @@
   *Date: 20/10/2020
   *File's name: display.h
   */
+#ifndef CTEXT_SRC_DISPLAY_DISPLAY_H_
+#define CTEXT_SRC_DISPLAY_DISPLAY_H_
 
-#ifndef DISPLAY_H
-#define DISPLAY_H
-
+#include <SDL/SDL.h>
 /**
  *Init only the video part.
  *@throw error message if it fail.
  */
 void init_sdl();
-
-
 
 /**
  *Load an image from a given path using SDL_image with format detection.
@@ -23,9 +21,7 @@ void init_sdl();
  *
  *@return image found at the given path.
  */
-SDL_Surface* load_image(char *path);
-
-
+SDL_Surface *load_image(char *path);
 
 /**
  *Displays a given image in a window.
@@ -35,13 +31,11 @@ SDL_Surface* load_image(char *path);
  *
  @return screen: a displayed image in a window.
  */
-SDL_Surface* display_image(SDL_Surface *img);
-
-
+SDL_Surface *display_image(SDL_Surface *img);
 
 /**
  *Wait for a key of the keyboard to be pressed before executing any action.
  */
 void wait_for_keypressed();
 
-#endif
+#endif //CTEXT_SRC_DISPLAY_DISPLAY_H_

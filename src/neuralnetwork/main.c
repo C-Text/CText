@@ -1,4 +1,4 @@
-#include "neuralnetwork/layer.h"
+#include "layer.h"
 #include <stdio.h>
 
 void prints(layer *l1, layer *l2) {
