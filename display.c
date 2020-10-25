@@ -1,91 +1,36 @@
 #include <err.h>
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
-#include <stdio.h>
-#include "pixel_operations.h"
-
-void init_sdl();
-SDL_Surface* load_image(char *path);
-SDL_Surface* display_image(SDL_Surface *img);
-void wait_for_keypressed();
-void SDL_FreeSurface(SDL_Surface *surface);
 
 
-int main()
-{
-	char str[100];
+/**
+  *Author: Lise Giraud
+  *Date: 20/10/2020
+  */
 
-   printf( "Enter the path of an image :");
-   int scan = scanf("%s", str);
-   if (scan == 0)
-   {
-	   errx(1,"Could not initialize SDL: %s.\n", SDL_GetError());
-   }
-
-   printf( "\nYou entered: %s", str);
-
-   FILE * file = fopen(str, "r");
-   if (!file){
-	   exit(201);
-   }
-   fseek(file, 0L, SEEK_END);
-   Uint32 res = ftell(file);
-   fclose(file);
-
-    SDL_Surface* image_surface = malloc(res);
-    SDL_Surface* screen_surface = malloc(res);
-
-    init_sdl(); 
-
-    image_surface = load_image(str);
-    screen_surface = display_image(image_surface);
-
-    wait_for_keypressed();
-
-    int w = image_surface->w;
-    int h = image_surface->h;
-    Uint8 r, g, b;
-
-
-    for (int i = 0; i < w; i++)
-    {
-	    for (int j = 0; j < h; j++)
-	    {
-		    Uint32 pixel = get_pixel(image_surface, i,j);
-		    SDL_GetRGB(pixel, image_surface->format, &r, &g, &b);
-		    float average = 0.3*r + 0.59*g + 0.11*b;
-		    r = average;
-		    g = average;
-		    b = average;
-		    pixel = SDL_MapRGB(image_surface->format, r, g, b);
-		    put_pixel(image_surface, i,j, pixel);
-	    }
-    }
-
-    update_surface(screen_surface, image_surface);
-
-    wait_for_keypressed();
-
-    SDL_FreeSurface(image_surface);
-    SDL_FreeSurface(screen_surface);
-
-    return 0;
-}
-
+/**
+  *Init only the video part.
+  *
+  *@throw error message if it fail.
+  */
 void init_sdl()
 {
-    // Init only the video part.
-    // If it fails, die with an error message.
     if(SDL_Init(SDL_INIT_VIDEO) == -1)
         errx(1,"Could not initialize SDL: %s.\n", SDL_GetError());
 }
 
+/**
+  *Load an image from a given path using SDL_image with format detection.
+  *
+  *@throw error if there is no image at the given path.
+  *@param path: the path of the image to display.
+  *
+  *@return image found at the given path.
+  */
 SDL_Surface* load_image(char *path)
 {
     SDL_Surface *img;
 
-    // Load an image using SDL_image with format detection.
-    // If it fails, die with an error message.
     img = IMG_Load(path);
     if (!img)
         errx(3, "can't load %s: %s", path, IMG_GetError());
@@ -93,6 +38,14 @@ SDL_Surface* load_image(char *path)
     return img;
 }
 
+/**
+  *Displays a given image in a window.
+  *
+  *@throw error if screen is null (cannot set video mode).
+  *@param img the image to display in a window.
+  *
+  @return screen: a displayed image in a window.
+  */
 SDL_Surface* display_image(SDL_Surface *img)
 {
     SDL_Surface *screen;
@@ -117,6 +70,10 @@ SDL_Surface* display_image(SDL_Surface *img)
     return screen;
 }
 
+
+/**
+  *Wait for a key of the keyboard to be pressed before executing any action.
+  */
 void wait_for_keypressed()
 {
     SDL_Event event;
