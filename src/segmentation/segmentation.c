@@ -5,7 +5,8 @@
 
 
 void hori_histo(unsigned int ext[], size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
-void vert_histo(size_t upper,size_t lower,unsigned int ext[], size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
+void vert_histo(size_t upper,size_t lower,unsigned int ext[], size_t sizex, size_t sizey, unsigned char img[sizey][sizex], size_t left, size_t right);
+void letter_seg(size_t upper,size_t lower, size_t left, size_t right, size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
 void word_seg(size_t upper,size_t lower,size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
 void line_seg(size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
 
@@ -16,6 +17,7 @@ void line_seg(size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
  * genaration(sadly it appear to be sligthly broken at the moment)
  * 
  */
+/*
 void generate( size_t sizex, size_t sizey,unsigned char image[sizey][sizex]) 
 {
     srand((unsigned int)time(NULL));
@@ -35,8 +37,8 @@ void generate( size_t sizex, size_t sizey,unsigned char image[sizey][sizex])
         image[sizey-1][y]=0;
     }
 } 
-
-
+*/
+/*
 int main()
 {
     size_t sizex = 60;
@@ -55,7 +57,7 @@ int main()
 
     return 0;
 }
-
+*/
 
 /**
  * 
@@ -148,7 +150,7 @@ void line_seg(size_t sizex, size_t sizey, unsigned char img[sizey][sizex])
 void word_seg(size_t upper,size_t lower,size_t sizex, size_t sizey, unsigned char img[sizey][sizex])
 {
     unsigned int ver_histo[sizex];
-    vert_histo(upper,lower,ver_histo,sizex,sizey,img);
+    vert_histo(upper,lower,ver_histo,sizex,sizey,img,0,sizex);
 
 
     size_t x = 0;
@@ -213,12 +215,15 @@ void word_seg(size_t upper,size_t lower,size_t sizex, size_t sizey, unsigned cha
  * @param sizey verticale size of img
  * @param upper limit the histogram to a precise max in img[][]
  * @param lower limit the histogram to a precise min in img[][]
+ * @param left specify from which indexe to start histogram
+ * @param right specify from which indexe to end histogram
  * 
  */
-void vert_histo(size_t upper,size_t lower,unsigned int ext[], size_t sizex, size_t sizey, unsigned char img[sizey][sizex])
+void vert_histo(size_t upper,size_t lower,unsigned int ext[], size_t sizex, size_t sizey,
+ unsigned char img[sizey][sizex],size_t left, size_t right)
 {
     size_t x, y;
-    for(x = 0 ; x < sizex ; x++)
+    for(x = left ; x < right ; x++)
     {
         ext[x]=0;
         //printf("ext(%lu) = %u\n",x,ext[x]);
@@ -234,3 +239,45 @@ void vert_histo(size_t upper,size_t lower,unsigned int ext[], size_t sizex, size
 }
 
 
+
+/**
+ * 
+ * Uses vert_histo vertical histogram to segment letters in a word.
+ * the neural network is called for each segmented letter to analyse them.
+ * @author matthieu
+ * @param img analysed image
+ * @param sizex horizontal size of img
+ * @param sizey verticale size of img
+ * @param upper limit the histogram to a precise max in img[][]
+ * @param lower limit the histogram to a precise min in img[][]
+ * @param left specify from which indexe to start each word
+ * @param right specify from which indexe to end each word
+ * 
+ */
+void letter_seg(size_t upper,size_t lower, size_t left, size_t right, size_t sizex,
+ size_t sizey, unsigned char img[sizey][sizex])
+{
+    unsigned int word_histo[right-left+1];
+    vert_histo(upper,lower,word_histo,sizex,sizey,img,left,right);
+
+    size_t x = 0;
+    size_t y = 0;
+    while (x<right-left+1)
+    {
+        if (word_histo[x]!=0)
+        {
+            y = x;
+            while(word_histo[y]!=0)
+            {
+                x+=1;
+            }
+            /* insert call to neural network */
+        }
+        else
+        {
+            x+=1;
+        }
+        
+        
+    }
+}
