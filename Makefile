@@ -9,7 +9,7 @@ LFLAGS	 =
 all: $(OBJS)
 	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
 
-main.o: main.c
+main.o: src/main.c
 	$(CC) $(FLAGS) main.c -std=c99
 
 clean:
