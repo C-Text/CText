@@ -41,4 +41,36 @@ void softmax(double *inputs, size_t size);
  */
 double mse(double input, double expected);
 
+/**
+ * Sigmoid function.
+ *
+ * @date    14/11/2020
+ * @version 0.0.1
+ * @author  Vinetos
+ * @package network
+ *
+ * This method calculate the sigmoid of the input
+ *
+ * @param input The value to activate
+ *
+ * @return the activated value
+ */
+double sigmoid(double input);
+
+/**
+ * The derivative of the Sigmoid function.
+ *
+ * @date    14/11/2020
+ * @version 0.0.1
+ * @author  Vinetos
+ * @package network
+ *
+ * This method calculate the sigmoid of the input
+ *
+ * @param input The value to activate
+ *
+ * @return the activated value
+ */
+double sigmoid_prime(double input);
+
 #endif //CTEXT_SRC_NEURALNETWORK_FUNCTION_H_
