@@ -10,8 +10,7 @@ jobs:
     - name: Install deps
       run: |
         sudo apt-get update -y -qq
-        sudo apt install libsdl1.2-dev libsdl-image1.2-dev libsdl2-dev
-        libsdl2-image-dev
+        sudo apt install libsdl1.2-dev libsdl-image1.2-dev
     - name: CMake the project
       run: cmake .
     - name: Make the projet
