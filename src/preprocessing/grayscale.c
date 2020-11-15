@@ -23,7 +23,7 @@ void grayscale(SDL_Surface *image_surface) {
       SDL_GetRGB(pixel, image_surface->format, &r, &g, &b);
       float average = 0.3 * r + 0.59 * g + 0.11 * b;
       r = average;
-      b = average;
+      g = average;
       b = average;
       pixel = SDL_MapRGB(image_surface->format, r, g, b);
       put_pixel(image_surface, i, j, pixel);

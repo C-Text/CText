@@ -5,14 +5,12 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 
-find_package(SDL2 REQUIRED)
 find_package(SDL REQUIRED)
-find_package(SDL2_image REQUIRED)
+find_package(SDL_image REQUIRED)
 
 include_directories(
-        ${SDL2_INCLUDE_DIRS}
         ${SDL_INCLUDE_DIRS}
-        ${SDL2_IMAGE_INCLUDE_DIRS}
+        ${SDL_IMAGE_INCLUDE_DIRS}
 )
 
 add_executable(
@@ -46,9 +44,8 @@ add_executable(
         src/segmentation/segmentation.c src/segmentation/segmentation.h
 )
 
-target_link_libraries(CText m ${SDL_LIBRARY} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES})
-target_link_libraries(CText-display m ${SDL_LIBRARY} ${SDL2_LIBRARY}
-        ${SDL2_IMAGE_LIBRARIES})
+target_link_libraries(CText m ${SDL_LIBRARY} ${SDL_IMAGE_LIBRARIES})
+target_link_libraries(CText-display m ${SDL_LIBRARY} ${SDL_IMAGE_LIBRARIES})
 target_link_libraries(CText-tests m)
 
 if (CMAKE_COMPILER_IS_GNUCC)
