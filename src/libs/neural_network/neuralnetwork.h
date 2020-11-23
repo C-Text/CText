@@ -1,22 +1,14 @@
-#ifndef NEURALNETWORK_H
-#define NEURALNETWORK_H
+#ifndef CTEXT_NEURALNETWORK_H
+#define CTEXT_NEURALNETWORK_H
+#include "neuron.h"
+#include "../list/list.h"
 
 // ================================
 // Type definition
 // ================================
 
 /**
- * A neuron
- */
-typedef struct Neuron {
-  double value;
-  double bias;
-  double error;
-  double *links;
-  size_t nb_link;
-} Neuron;
-
-/**
+ * A neural network
  */
 typedef struct NeuralNetwork {
   List layers;
@@ -27,24 +19,20 @@ typedef struct NeuralNetwork {
 // ===============================
 
 /**
+ * Activation function sigmoid
  *
- * @param value
- * @return
+ * @param value the value to activate
+ *
+ * @return the activated value
  */
-double sigmmoide(double value);
+double sigmoid(double value);
 
 /**
+ * Initialize a neural network
  *
- * @param value
- * @return
- */
-double derivative(double value);
-
-/**
- *
- * @param net
- * @param nb_layer
- * @param nb_neurons_per_layer
+ * @param net                   the network to init
+ * @param nb_layer              the number of layers in the networks
+ * @param nb_neurons_per_layer  the numbers of neurons in layers
  */
 void init(NeuralNetwork *net, size_t nb_layer, size_t nb_neurons_per_layer[]);
 
@@ -87,33 +75,8 @@ void save_neural_network(NeuralNetwork *network);
 
 /**
  *
- * @param file
- * @return
- */
-double load_link(FILE *file);
-
-/**
- *
- * @param file
- * @param num_layer
- * @param nb_neurons_per_layer
- * @return
- */
-Neuron load_neuron(FILE *file, size_t num_layer, size_t nb_neurons_per_layer[]);
-
-/**
- *
- * @param file
- * @param num_layer
- * @param nb_neurons_per_layer
- * @return
- */
-List load_layer(FILE *file, int num_layer, size_t nb_neurons_per_layer[]);
-
-/**
- *
  * @param net
  */
 void load_neural_network(NeuralNetwork *net);
 
-#endif //NEURALNETWORK_H
+#endif //CTEXT_NEURALNETWORK_H

@@ -1,19 +1,11 @@
-#ifndef LIST_MANIPULATION_INDEX_H
-#define LIST_MANIPULATION_INDEX_H
+#ifndef CTEXT_LIST_H
+#define CTEXT_LIST_H
+
+#include <stdbool.h>
 
 // ================================
 // Type definition
 // ================================
-
-/**
- * Bool
- * Definition of a boolean type
- *
- */
-typedef enum {
-  false,
-  true
-} Bool;
 
 typedef enum {
   NeuronType,
@@ -60,7 +52,7 @@ List create_list(void);
  *
  * @return true if empty
  */
-Bool is_empty(List list);
+bool is_empty(List list);
 
 /* get_length
  * Input:
@@ -140,13 +132,6 @@ List pop_front_list(List list);
  * @return return an element by its index
  */
 Node *get_element_by_index(List list, int i);
-
-/**
- * Print the content of a list
- *
- * @param list the list to print
- */
-void print_list(List list);
 
 /**
  * Clear a list
