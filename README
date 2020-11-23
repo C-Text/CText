@@ -10,16 +10,15 @@ gcc
 cmake
 make
 sdl
-sdl2
-sdl2_image
+sdl_image
+sdl_gfx
+gtk3
 
 = Build =
-cmake .
 make
 
 = Launch =
-./CText
-./CText-tests
+./CText.exe
 
 = Contribute =
 
