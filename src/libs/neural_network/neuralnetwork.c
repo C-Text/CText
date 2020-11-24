@@ -35,7 +35,7 @@ void init(NeuralNetwork *net, size_t nb_layer, size_t nb_neurons_per_layer[]) {
         net->layers,
         create_layer(
             nb_neurons_per_layer[i],
-            (i == (nb_layer - 1) ? 0 : nb_neurons_per_layer[i + 1])
+            (i == 0 ? 0 : nb_neurons_per_layer[i - 1])
         ),
         LayerType
     );
@@ -102,23 +102,23 @@ void print_info(NeuralNetwork *net) {
   }
 }
 
-double sum(List layer, size_t pos) {
+double sum(List layer, double *links) {
   double value = 0;
   Node *current_node = layer->first;
   for (size_t neuron_i = 0; neuron_i < layer->length; neuron_i++) {
     Neuron *n = current_node->value;
-    value += n->value * n->links[pos];
+    value += n->value * links[neuron_i];
     current_node = current_node->next;
   }
   return value;
 }
 
-double sum_error(List layer, size_t pos) {
+double sum_error(List layer, double *links) {
   double value = 0;
   Node *current_node = layer->first;
   for (size_t neuron_i = 0; neuron_i < layer->length; neuron_i++) {
     Neuron *n = current_node->value;
-    value += n->error * n->links[pos];
+    value += n->error * links[neuron_i];
     current_node = current_node->next;
   }
   return value;
@@ -145,8 +145,8 @@ void propagation(NeuralNetwork *network, double entries[]) {
 
     Node *current_node = layer2->first;
     for (size_t neuron_i = 0; neuron_i < layer2->length; neuron_i++) {
-      double new_val = sum(layer1, neuron_i);
       Neuron *n = current_node->value;
+      double new_val = sum(layer1, n->links);
       n->value = sigmoid(new_val + n->bias);
       current_node = current_node->next;
     }
@@ -168,11 +168,12 @@ void update_error(NeuralNetwork *network, double expected[]) {
 
   for (size_t i = 0; i < last->length; i++) {
     Neuron *n = current_node->value;
-    n->error = n->value - expected[i] * derivative(n->value);
+    n->error = (n->value - expected[i]) * derivative(n->value);
     current_node = current_node->next;
   }
 
   // For all layers
+  current_node = last->first;
   Node *prev = last_nod->previous;
   for (int lI = 0; lI < network->layers->length - 1; ++lI) {
     List prev_layer = prev->value;
@@ -182,7 +183,8 @@ void update_error(NeuralNetwork *network, double expected[]) {
     for (size_t i = 0; i < last->length; i++) {
       Neuron *n = previous_node->next;
       // Update error of n
-      n->error = sum(last, i) * derivative(n->value);
+      n->error = sum_error(last, ((Neuron *)current_node->value)->links) *
+          derivative(n->value);
       previous_node = previous_node->next;
     }
 

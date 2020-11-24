@@ -23,10 +23,10 @@ typedef struct Neuron {
  * @author  Valentin (Vinetos) Chassignol
  * @package neuralnetwork
  *
- * @param next_layer_size the number of neuron is the next layer
+ * @param previous_layer_size the number of neuron is the previous layer
  *
  * @return initialized neuron_t with default parameters.
  */
-Neuron *create_neuron(size_t next_layer_size);
+Neuron *create_neuron(size_t previous_layer_size) ;
 
 #endif //CTEXT_NEURALNETWORK_NEURON_H
