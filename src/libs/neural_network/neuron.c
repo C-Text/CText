@@ -15,15 +15,14 @@ Neuron *create_neuron(size_t next_layer_size) {
   n->error = 0;
   n->nb_link = 0;
 
-  // Add links for the next layer
   if (next_layer_size != 0) {
+    // Add links for the next layer
     n->links = malloc(sizeof(double) * next_layer_size);
     n->nb_link = next_layer_size;
 
     // Generating random weight for each links
     for (size_t i = 0; i < next_layer_size; i++)
       n->links[i] = generate_link();
-
   }
   return n;
 }

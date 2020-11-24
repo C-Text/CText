@@ -36,12 +36,16 @@ double sigmoid(double value);
  */
 void init(NeuralNetwork *net, size_t nb_layer, size_t nb_neurons_per_layer[]);
 
+void print_info(NeuralNetwork *net);
+
 /**
  *
  * @param network
  * @param entry
  */
 void propagation(NeuralNetwork *network, double entry[]);
+
+void update_error(NeuralNetwork *network, double expected[]);
 
 /**
  *

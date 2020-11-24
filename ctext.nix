@@ -5,6 +5,7 @@ in pkgs.mkShell rec {
    buildInputs = with pkgs; [
     gcc
     gnumake
+    cmake
     pkg-config
 
     SDL.dev
