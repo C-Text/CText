@@ -142,4 +142,12 @@ Node *get_element_by_index(List list, int i);
  */
 List clear_list(List list);
 
+/**
+ * todo
+ * @param list
+ * @param f
+ * @param args
+ */
+void for_each_in(List list, void (*f)(Node *, size_t, void *), void *args);
+
 #endif
