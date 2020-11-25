@@ -36,37 +36,27 @@ double sigmoid(double value);
  */
 void init(NeuralNetwork *net, size_t nb_layer, size_t nb_neurons_per_layer[]);
 
+/**
+ * Prints the neural network in the console
+ *
+ * @param net the network to print
+ */
 void print_info(NeuralNetwork *net);
 
 /**
+ * Save the neural network in a file
  *
- * @param network
- * @param entry
- * @param expected
- * @param learning_rate
- * @return
+ * @param net      the network to save
+ * @param filename the file where to save the network
  */
-size_t learn(NeuralNetwork *network, double **entries, double **expected, double
-learning_rate);
+void save_neural_network(NeuralNetwork *net, const char *filename);
 
 /**
+ * Load the neural network from a file
  *
- * @param network
- * @param entry
- * @return
+ * @param net      the network to save
+ * @param filename the file where to save the network
  */
-size_t run(NeuralNetwork *network, double entry[]);
-
-/**
- *
- * @param network
- */
-void save_neural_network(NeuralNetwork *network);
-
-/**
- *
- * @param net
- */
-void load_neural_network(NeuralNetwork *net, const char *__filename);
+void load_neural_network(NeuralNetwork *net, const char *filename);
 
 #endif //CTEXT_NEURALNETWORK_H

@@ -11,8 +11,8 @@ int main(int argc, char *argv[]) {
   load_neural_network(&network,
                       "/home/vinetos/Documents/EPITA/SPE/PROG/CText/CText/network.txt");
   double expected[] = {0, 1};
-  update_error(&network, expected);
-  print_info(&network);
+  //backpropagation(&network, expected, 0.8);
+  //print_info(&network);
 
 
   return 0;

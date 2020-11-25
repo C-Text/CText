@@ -236,17 +236,7 @@ learning_rate) {
   }
 }
 
-// Machine learning function
-size_t learn(NeuralNetwork *network, double **entries, double **expected, double
-learning_rate) {
-
-}
-
-size_t run(NeuralNetwork *network, double entry[]) {
-
-}
-
-void save_neural_network(NeuralNetwork *network);
+void save_neural_network(NeuralNetwork *net, const char *filename);
 
 // Return the value of the current link
 double set_new_link(FILE *file) {
