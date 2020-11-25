@@ -59,4 +59,11 @@ void save_neural_network(NeuralNetwork *net, const char *filename);
  */
 void load_neural_network(NeuralNetwork *net, const char *filename);
 
+void backpropagation(NeuralNetwork *network, double expected[], double
+learning_rate);
+
+void propagation(NeuralNetwork *network, double *entries);
+
+double predict(NeuralNetwork *network, double *input);
+
 #endif //CTEXT_NEURALNETWORK_H

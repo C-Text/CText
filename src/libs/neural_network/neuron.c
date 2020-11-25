@@ -4,7 +4,7 @@
 
 // Return a random value between 5 and -5
 double generate_link() {
-  return (((double) (random() % 100)) / 10) - 5;
+  return (((double) (random() % 100)) / 100) - 0.5;
 }
 
 Neuron *create_neuron(size_t previous_layer_size) {

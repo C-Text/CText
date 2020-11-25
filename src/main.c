@@ -7,13 +7,27 @@ int main(int argc, char *argv[]) {
     printf("Should be the interface here\n");
   }
   printf("Called: %s\n", argv[0]);
+  double inputs[4][2] = {
+      {0, 0},
+      {0, 1},
+      {1, 0},
+      {1, 1},
+  };
   NeuralNetwork network;
-  load_neural_network(&network,
-                      "/home/vinetos/Documents/EPITA/SPE/PROG/CText/CText/network.txt");
-//  double expected[] = {0, 1};
-  //backpropagation(&network, expected, 0.8);
-  //print_info(&network);
 
+  size_t nb_neurons_per_layer[3] = {2, 3, 1};
+  // init(&network, 3, nb_neurons_per_layer);
+  load_neural_network(&network,
+                      "/home/vinetos/Documents/EPITA/SPE/PROG/CText/"
+                      "CText/xor-trained-network.txt");
+
+  for (int iI = 0; iI < 4; ++iI) {
+    double *entry = inputs[iI];
+    propagation(&network, entry);
+    //print_info(&network);
+    printf("%d, %d = %lf\n", (int)entry[0], (int)entry[1], predict(&network,
+    entry));
+  }
 
   return 0;
 }

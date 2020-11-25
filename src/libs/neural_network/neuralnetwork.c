@@ -102,17 +102,6 @@ void print_info(NeuralNetwork *net) {
   }
 }
 
-double sum(List layer, double *links) {
-  double value = 0;
-  Node *current_node = layer->first;
-  for (size_t neuron_i = 0; neuron_i < layer->length; neuron_i++) {
-    Neuron *n = current_node->value;
-    value += n->value * links[neuron_i];
-    current_node = current_node->next;
-  }
-  return value;
-}
-
 double sum_error(List layer, double *links) {
   double value = 0;
   Node *current_node = layer->first;
@@ -124,116 +113,46 @@ double sum_error(List layer, double *links) {
   return value;
 }
 
-void propagation(NeuralNetwork *network, double entries[]) {
-  // Feed first layer with entries values
-  Node *current_layer = network->layers->first;
-  List l = (List) current_layer->value;
-  Node *current_first = l->first;
-  for (size_t i = 0; i < l->length; i++) {
-    Neuron *first = (Neuron *) current_first->value;
-    first->value = entries[i];
-    current_first = current_first->next;
-  }
-
-  // Propagation of the information into the network
-  Node *next_layer = current_layer->next;
-
-  // Process all layers
-  for (size_t i = 0; i < network->layers->length - 1; ++i) {
-    List layer1 = (List) current_layer->value;
-    List layer2 = (List) next_layer->value;
-
-    Node *current_node = layer2->first;
-    for (size_t neuron_i = 0; neuron_i < layer2->length; neuron_i++) {
-      Neuron *n = current_node->value;
-      double new_val = sum(layer1, n->links);
-      n->value = sigmoid(new_val + n->bias);
-      current_node = current_node->next;
-    }
-
-    // Next layer
-    current_layer = current_layer->next;
-    next_layer = next_layer->next;
-  }
-}
-
-void calculate_output_error(Node *node, size_t i, void *args, void *output) {
-  Neuron *n = node->value;
-  double *expected = args;
-  double diff = expected[i] - n->value;
-  n->error = (diff * diff) / 2;
-  double *total = output;
-  *total += n->error;
-}
-
-void update_links(Node *node, List previous_layer, double expected, double lr) {
-  // We are in the first layer so no link to update
-  if (!previous_layer)
-    return;
-
-  //Impact of links
-  Neuron *n = node->value;
-  Node *prev_n = previous_layer->first;
-  for (size_t linkI = 0; linkI < n->nb_link; ++linkI) {
-    Neuron *pn = prev_n->value;
-    double cost = (n->value - expected) * n->value * (1 - n->value) * pn->value;
-    n->links[linkI] = n->links[linkI] - lr * cost;
-    prev_n = prev_n->next;
-  }
-}
-
-double sum_error_t(List layer, size_t pos) {
+double sum_layer(List layer, double *links) {
+  // Feed the i-th neuron
   double sum = 0;
-  Node *no = layer->first;
-  Neuron *n = no->value;
-  for (size_t linkI = 0; linkI < n->nb_link; ++linkI) {
-    n = layer->first->value;
-    sum += n->error * n->value * (1 - n->value) * n->links[pos];
-    no = no->next;
+  size_t pos = 0;
+  for (Node *node = layer->first; node != NULL; node = node->next) {
+    Neuron *n = node->value;
+    sum += n->value * links[pos];
+    pos++;
   }
   return sum;
 }
 
+void propagation(NeuralNetwork *network, double *entries) {
+  // Feed first layer with entries values
+  Node *current_layer = network->layers->first;
+  List first_layer = current_layer->value;
+
+  for (Node *node = first_layer->first; node != NULL; node = node->next) {
+    Neuron *n = node->value;
+    n->value = *(entries++);
+  }
+
+  // Propagation of the information into the network
+  Node *next_layer = NULL;
+  for (next_layer = current_layer->next; next_layer != NULL;
+       next_layer = next_layer->next, current_layer = current_layer->next) {
+    List l1 = current_layer->value, l2 = next_layer->value;
+
+    // Feed the i-th neuron
+    for (Node *node2 = l2->first; node2 != NULL; node2 = node2->next) {
+      Neuron *n2 = node2->value;
+      double sum = sum_layer(l1, n2->links) + n2->bias;
+      n2->value = sigmoid(sum);
+    }
+  }
+}
+
 void backpropagation(NeuralNetwork *network, double expected[], double
 learning_rate) {
-  Node *last_layer_nod = network->layers->last;
-  List last_layer = last_layer_nod->value;
-  // Calculate the total error of output layers
-  double total_error = 0;
-  for_each_in(last_layer, calculate_output_error, expected, &total_error);
 
-  // For each neurons in last layer
-  Node *current_layer_nod = last_layer_nod->previous;
-  List current_layer = current_layer_nod->value;
-  Node *node = last_layer->first;
-  for (size_t nI = 0; nI < last_layer->length; ++nI) {
-    update_links(node, current_layer, expected[nI], learning_rate);
-  }
-
-  // Now we update hidden layers
-  Node *prev_layer_nod = current_layer_nod->previous;
-  for (size_t hlI = 0; hlI < network->layers->length - 2; ++hlI) {
-    List pre_prev_layer = prev_layer_nod->value;
-    current_layer = current_layer_nod->value;
-    last_layer = last_layer_nod->value;
-
-    // For each neuron
-    node = current_layer->first;
-    for (size_t nI = 0; nI < last_layer->length; ++nI) {
-      Neuron *n = node->value;
-      // For each links
-      double s = sum_error_t(last_layer, nI);
-      s *= n->value * (1 - n->value);
-      for (size_t linkI = 0; linkI < n->nb_link; ++linkI) {
-        Neuron *linked = get_element_by_index(pre_prev_layer, linkI)->value;
-        n->links[linkI] = n->links[linkI] - s * learning_rate * linked->value;
-      }
-    }
-
-    last_layer_nod = last_layer_nod->previous;
-    current_layer_nod = current_layer_nod->previous;
-    prev_layer_nod = prev_layer_nod->previous;
-  }
 }
 
 void save_neural_network(NeuralNetwork *net, const char *filename);
@@ -306,7 +225,7 @@ void load_neural_network(NeuralNetwork *net, const char *filename) {
   size_t nb_neurons_per_layer[nb_layer];
   items += fscanf(file, "neurons:");
   int k = 0;
-  while (items += fscanf(file, " %zi", &nb_neurons_per_layer[k++]));
+  while (fscanf(file, " %zi", &nb_neurons_per_layer[k++]));
 
   // Add all layers into network :
   int layer_num;
@@ -321,4 +240,9 @@ void load_neural_network(NeuralNetwork *net, const char *filename) {
   }
 
   fclose(file);
+}
+
+double predict(NeuralNetwork *network, double *input) {
+  propagation(network, input);
+  return ((Neuron *) ((List) network->layers->last->value)->last->value)->value;
 }
