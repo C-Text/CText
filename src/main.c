@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
   NeuralNetwork network;
   load_neural_network(&network,
                       "/home/vinetos/Documents/EPITA/SPE/PROG/CText/CText/network.txt");
-  double expected[] = {0, 1};
+//  double expected[] = {0, 1};
   //backpropagation(&network, expected, 0.8);
   //print_info(&network);
 
