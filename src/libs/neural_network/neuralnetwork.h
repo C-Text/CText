@@ -42,26 +42,12 @@ void print_info(NeuralNetwork *net);
  *
  * @param network
  * @param entry
- */
-void propagation(NeuralNetwork *network, double entry[]);
-
-void update_error(NeuralNetwork *network, double expected[]);
-
-/**
- *
- * @param network
- * @param coef
- */
-void backpropagation(NeuralNetwork *network, double coef);
-
-/**
- *
- * @param network
- * @param entry
  * @param expected
+ * @param learning_rate
  * @return
  */
-size_t learn(NeuralNetwork *network, double entry[], double expected[]);
+size_t learn(NeuralNetwork *network, double **entries, double **expected, double
+learning_rate);
 
 /**
  *
@@ -81,6 +67,6 @@ void save_neural_network(NeuralNetwork *network);
  *
  * @param net
  */
-void load_neural_network(NeuralNetwork *net);
+void load_neural_network(NeuralNetwork *net, const char *__filename);
 
 #endif //CTEXT_NEURALNETWORK_H
