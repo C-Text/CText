@@ -148,6 +148,9 @@ List clear_list(List list);
  * @param f
  * @param args
  */
-void for_each_in(List list, void (*f)(Node *, size_t, void *), void *args);
+void for_each_in(List list,
+                 void (*f)(Node *, size_t, void *, void *),
+                 void *args,
+                 void *output);
 
 #endif

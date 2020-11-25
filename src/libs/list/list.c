@@ -204,10 +204,11 @@ List clear_list(List list) {
   return create_list();
 }
 
-void for_each_in(List list, void (*f)(Node *, size_t, void *), void *args) {
+void for_each_in(List list, void (*f)(Node *, size_t, void *, void *), void *args,
+                 void *output) {
   Node *current_node = list->first;
   for (size_t i = 0; i < list->length; i++) {
-    f(current_node, i, args);
+    f(current_node, i, args, output);
     current_node = current_node->next;
   }
 }
