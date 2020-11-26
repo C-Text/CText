@@ -6,6 +6,10 @@ double sigmoid(double value) {
   return 1 / (1 + exp(-value));
 }
 
+double sigmoid_prime(double value) {
+  return value * (1 - value);
+}
+
 double derivative(double activated_value) {
   return activated_value * (1 - activated_value);
 }
@@ -150,8 +154,34 @@ void propagation(NeuralNetwork *network, double *entries) {
   }
 }
 
-void backpropagation(NeuralNetwork *network, double expected[], double
+void update_links(Neuron *n) {
+
+}
+
+void backpropagation(NeuralNetwork *network, double *expected, double
 learning_rate) {
+  Node *to_update_layer_node = network->layers->last;
+  Node *previous_layer_node = to_update_layer_node->previous;
+
+  List to_update_layer = to_update_layer_node->value;
+  List previous_layer = previous_layer_node->value;
+
+  // ================== UPDATING LAST LAYER ==================
+  // Update each link of the "last_layer" by giving "previous" layer neuron
+  // values
+  size_t i = 0;
+  for (Node *prev_node = previous_layer->first; prev_node != NULL;
+       prev_node = prev_node->next, i++) {
+    Neuron *prev_n = prev_node->value;
+    // Update all links of this neuron
+    for (Node *node = to_update_layer->first; node != NULL; node = node->next) {
+      Neuron *n = node->value;
+      double new_link = (n->value - expected[i]);
+      new_link *= sigmoid_prime(n->value);
+      new_link *= prev_n->value;
+      n->links[i] = n->links[i] - learning_rate * new_link;
+    }
+  }
 
 }
 
