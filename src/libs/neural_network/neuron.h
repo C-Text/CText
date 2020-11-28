@@ -7,6 +7,7 @@
  * Represent a neuron of the neural network
  */
 typedef struct Neuron {
+  double input;
   double value;
   double bias;
   double error;

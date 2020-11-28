@@ -59,11 +59,33 @@ void save_neural_network(NeuralNetwork *net, const char *filename);
  */
 void load_neural_network(NeuralNetwork *net, const char *filename);
 
+/**
+ * Feedforward the input in the neural network
+ *
+ * @param network The network the feed
+ * @param entries the input
+ */
+void propagation(NeuralNetwork *network, double *entries);
+
+/**
+ * Update error, weights and biases of the neural network according the
+ * expected result
+ *
+ * @param network The network the feed
+ * @param entries the input of the neural network
+ */
 void backpropagation(NeuralNetwork *network, double expected[], double
 learning_rate);
 
-void propagation(NeuralNetwork *network, double *entries);
-
-double predict(NeuralNetwork *network, double *input);
+/**
+ * Use a trained network to predict a result from the given input
+ *
+ * @param network a trained neural network (or untrained if you are doing
+ * weird things)
+ * @param input   the input of the neural network
+ *
+ * @return an array containing the result of each output neurons
+ */
+double *predict(NeuralNetwork *network, double *input);
 
 #endif //CTEXT_NEURALNETWORK_H
