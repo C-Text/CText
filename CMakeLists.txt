@@ -20,7 +20,7 @@ add_executable(
         src/libs/neural_network/neuralnetwork.h
         src/libs/neural_network/neuron.c
         src/libs/neural_network/neuron.h
-)
+        src/libs/image_manipulation/pixel_operations.c src/libs/image_manipulation/pixel_operations.h src/libs/image_manipulation/otsu.c src/libs/image_manipulation/otsu.h src/libs/image_manipulation/grayscale.c src/libs/image_manipulation/grayscale.h)
 
 target_link_libraries(CText m ${SDL_LIBRARY} ${SDL_IMAGE_LIBRARIES})
 
