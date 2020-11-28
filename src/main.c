@@ -19,15 +19,10 @@ int main(int argc, char *argv[]) {
   NeuralNetwork network;
 
   init(&network, 3, nb_neurons_per_layer);
-  load_neural_network(&network,
-                      "/home/vinetos/Documents/EPITA/SPE/PROG/CText/"
-                      "CText/back-network.txt");
-
   for (int i = 0; i < 1000; i++) {
     propagation(&network, inputs[0]);
     backpropagation(&network, outputs[0], 0.5);
   }
   propagation(&network, inputs[0]);
-  print_info(&network);
   return 0;
 }

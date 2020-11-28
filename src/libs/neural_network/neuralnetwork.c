@@ -233,7 +233,74 @@ learning_rate) {
 
 }
 
-void save_neural_network(NeuralNetwork *net, const char *filename);
+// Save network into save_network.txt
+void save_neural_network(NeuralNetwork *net, const char *filename) {
+  // Init and open file
+  List layers = net->layers;
+  Node *neurons = (Node *) (layers->first);
+  List list_neuron;
+  Neuron *n;
+  FILE *file = fopen(filename, "w");
+
+  // Print layer number at the top of the file
+  fprintf(file, "layers: %lu\n", net->layers->length);
+  Node current_neurons = *(Node *) (layers->first);
+  fprintf(file, "neurons:");
+
+  // Print all layers length into the file
+  for (unsigned long i = 1; i <= layers->length; i++) {
+    fprintf(file, " %lu", ((List) (current_neurons.value))->length);
+    if (current_neurons.next)
+      current_neurons = *(Node *) current_neurons.next;
+  }
+
+  // target all layers:
+  for (unsigned long i = 1; i <= layers->length; i++) {
+    list_neuron = (List) (neurons->value);
+
+    // Print the layer number
+    fprintf(file, "\n= Layer %lu =\n\n", i);
+    Node *current_n = list_neuron->first;
+    n = (Neuron *) (current_n->value);
+
+    // if it is not the first layer:
+    if (n->nb_link != 0)
+      for (unsigned long k = 1; k <= list_neuron->length; k++) {
+        n = (Neuron *) (current_n->value);
+
+        // print all info of the current neuron
+        fprintf(file, "Value :\n%.50f\n", n->value);
+        fprintf(file, "Bias :\n%.50f\n", n->bias);
+        fprintf(file, "Error :\n%.50f\n", n->error);
+        fprintf(file, "Links :\n");
+
+        // Print all links
+        for (unsigned long j = 0; j < n->nb_link; j++)
+          fprintf(file, "%.50f / ", n->links[j]);
+
+        fprintf(file, "\n\n");
+        current_n = current_n->next;
+
+      }
+      // It is the first layer:
+    else {
+      for (unsigned long k = 1; k <= list_neuron->length; k++) {
+
+        // Print all info of the neuron
+        n = (Neuron *) (current_n->value);
+        fprintf(file, "Value :\n%.50f\n", n->value);
+        fprintf(file, "Bias :\n%.50f\n", n->bias);
+        fprintf(file, "Error :\n%.50f\n", n->error);
+        current_n = (current_n->next);
+        fprintf(file, "\n");
+      }
+    }
+    neurons = neurons->next;
+  }
+  // Close the file
+  fclose(file);
+}
+
 
 // Return the value of the current link
 double set_new_link(FILE *file) {
