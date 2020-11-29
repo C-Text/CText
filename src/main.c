@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include "libs/neural_network/neuralnetwork.h"
+#include "libs/application/application.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
   if (argc == 1) {
     // Launch interface
-    printf("Should be the interface here\n");
-    return 0;
+    return launch_application(argc, argv);
   }
   printf("Called: %s\n", argv[0]);
   double inputs[1][2] = {
