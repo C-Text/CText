@@ -1,55 +1,45 @@
 #include "application.h"
 
-#define IDENTIFIER "com.ctext.ctext"
-#define TITLE       "CText"
-#define HEIGHT      200
-#define WIDTH       200
+#define W_MAIN_ID "org.ctext.main_window"
+#define W_DIALG_ID "org.ctext.file_chooser"
 
-static void launch_file_chooser(GtkWindow *parent_window) {
-  GtkWidget *dialog;
-  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
-  gint res;
-
-  dialog = gtk_file_chooser_dialog_new("Open File",
-                                       parent_window,
-                                       action,
-                                       "Cancel",
-                                       GTK_RESPONSE_CANCEL,
-                                       "Open",
-                                       GTK_RESPONSE_ACCEPT,
-                                       NULL);
-
-  res = gtk_dialog_run(GTK_DIALOG (dialog));
-  if (res == GTK_RESPONSE_ACCEPT) {
-    char *filename;
-    GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-    filename = gtk_file_chooser_get_filename(chooser);
-    g_print("%s", filename);
-    g_free(filename);
-  }
-
-  gtk_widget_destroy(dialog);
+G_MODULE_EXPORT void __attribute__ ((unused))on_button1_clicked(__attribute__ ((unused))GtkButton *button, __attribute__ ((unused))gpointer user_data) {
+    g_print("Check point 1\n");
 }
 
-static void activate(GtkApplication *app,
-                     __attribute__ ((unused)) gpointer user_data) {
-  GtkWidget *window;
-
-  window = gtk_application_window_new(app);
-  gtk_window_set_title(GTK_WINDOW (window), TITLE);
-  gtk_window_set_default_size(GTK_WINDOW (window), WIDTH, HEIGHT);
-  gtk_widget_show_all(window);
-  launch_file_chooser(GTK_WINDOW (window));
+G_MODULE_EXPORT void __attribute__ ((unused))on_button2_clicked(__attribute__ ((unused))GtkButton *button, __attribute__ ((unused))gpointer user_data) {
+    g_print("Check point 2\n"); //to help debugging
 }
 
 int launch_application(int argc, char **argv) {
-  GtkApplication *app;
-  int status;
+    GtkBuilder *builder;
+    GError *error = NULL;
+    app_widgets *widgets = g_slice_new(app_widgets);
 
-  app = gtk_application_new(IDENTIFIER, G_APPLICATION_FLAGS_NONE);
-  g_signal_connect (app, "activate", G_CALLBACK(activate), NULL);
-  status = g_application_run(G_APPLICATION (app), argc, argv);
-  g_object_unref(app);
+    // Init gtk
+    gtk_init(&argc, &argv);
 
-  return status;
+    builder = gtk_builder_new();
+    if (gtk_builder_add_from_file(builder, "src/assets/interface.glade", &error) == 0) {
+        g_printerr("Error loading file: %s\n", error->message);
+        g_clear_error(&error);
+        return 1;
+    }
+
+    /* Connect signal handlers to the constructed widgets. */
+    widgets->w_main = GTK_WIDGET(gtk_builder_get_object(builder, W_MAIN_ID));
+    widgets->w_dlg_file_choose = GTK_WIDGET(gtk_builder_get_object(builder, W_DIALG_ID));
+
+    // Connect signals
+    gtk_builder_connect_signals(builder, widgets);
+
+    g_object_unref(builder);
+
+    g_signal_connect(widgets->w_main, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    gtk_widget_show(widgets->w_main);
+
+    gtk_main();
+
+
+    return 0;
 }

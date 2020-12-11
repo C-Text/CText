@@ -8,14 +8,12 @@ CC          = gcc
 FLAGS       = -O3
 DEBUG_FLAGS = -O0
 
-CFLAGS      =  -Wall -Wextra -Werror -std=c99 `pkg-config --cflags gtk+-3.0`
-SDL_FLAGS   = `sdl-config --cflags --libs` -lSDL_image -lSDL_gfx `pkg-config --libs gtk+-3.0`
+CFLAGS      =  -Wall -Wextra -Werror -rdynamic -std=c99 `pkg-config --cflags gtk+-3.0`
+SDL_FLAGS   = `sdl-config --cflags --libs` -lSDL_image `pkg-config --libs gtk+-3.0` `pkg-config gmodule-2.0 --libs`
 CPPFLAGS= `pkg-config --cflags sdl` -MMD `pkg-config --libs gtk+-3.0`
-LDLIBS= `pkg-config --libs sdl` -lSDL_image `pkg-config --libs gtk+-3.0`
 
 
 CPPFLAGS= `pkg-config --cflags sdl` -MMD
-LDLIBS= `pkg-config --libs sdl` -lSDL_image
 
 all: $(OBJS)
 	$(CC) $(FLAGS) -g $(OBJS) -o $(OUT) ${SDL_FLAGS} -lm -ldl
