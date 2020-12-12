@@ -3,6 +3,97 @@
 #include <time.h>
 #include <string.h>
 
+
+typedef struct Block
+{
+    size_t upperx;
+    size_t uppery;
+    size_t lowerx;
+    size_t lowery;
+}Block;
+
+typedef struct BiBlock
+{
+    Block* upper;
+    Block* lower;
+}BiBlock;
+
+typedef struct Coords
+{
+    size_t x;
+    size_t y;
+}Coords;
+
+typedef struct Node
+{
+    
+    Block* block;
+
+    struct Node* left;
+    struct Node* right;
+}Node;
+
+Coords* newcoords()
+{
+    Coords* coords = (Coords*)malloc(sizeof(struct Coords));
+
+    coords->x = 0;
+    coords->y = 0; 
+    return coords;
+}
+
+Block* newblock(size_t upperx,size_t uppery,size_t lowerx,size_t lowery)
+{
+    Block* block = (Block*)malloc(sizeof(struct Block));
+
+    block->upperx = upperx;
+    block->uppery = uppery; 
+    block->lowerx = lowerx;
+    block->lowery = lowery;
+    return block;
+}
+
+BiBlock* newbiblock(Block* upper,Block* lower)
+{
+    BiBlock* biblock = (BiBlock*)malloc(sizeof(struct BiBlock));
+    biblock->upper = upper;
+    biblock->lower = lower;
+    return biblock;
+}
+
+struct Node* newNode() 
+{ 
+    // Allocate memory for new node  
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node)); 
+
+    // Initialize block as null
+    node->block = NULL;
+    // Initialize left and right children as NULL 
+    node->left = NULL; 
+    node->right = NULL; 
+    return(node); 
+}
+BiBlock* Xcut(Block* block,Coords* size,unsigned char M[size->x][size->y]);
+BiBlock* Ycut(Block* block,Coords* size,unsigned char M[size->x][size->y]);
+
+Node* __buildtreeX(Node* tree, Coords* size,unsigned char M[size->x][size->y]);
+Node* __buildtreeY(Node* tree, Coords* size,unsigned char M[size->x][size->y]);
+
+void printB(Block* block,Coords* coords, unsigned char M[coords->x][coords->y]);
+
+void printM(Coords* coords,
+            unsigned char M[coords->x][coords->y]);
+int isblack(size_t x, size_t y ,
+            Coords* coords,
+            unsigned char M[coords->x][coords->y]);
+Coords* optiM(Coords* Msize,
+            unsigned char M[Msize->y][Msize->x],
+            unsigned char opti[Msize->y/12+1][Msize->x/12+1]);
+
+void seg(Coords* size,unsigned char M[size->x][size->y]);
+
+
+
 void hori_histo(unsigned int ext[],
                 size_t sizex,
                 size_t sizey,
@@ -284,4 +375,284 @@ void letter_seg(size_t upper,
     }
 
   }
+}
+
+
+
+void printM(Coords* size, unsigned char M[size->x][size->y])
+{
+    size_t x,y;
+    for(y=0;y<size->y;y++)
+    {
+        printf("|");
+        for(x=0;x<size->x;x++)
+        {
+            printf("%i|",M[y][x]);
+        }
+        printf("\n");
+    }
+}
+
+void printB(Block* block,Coords* size, unsigned char M[size->x][size->y])
+{
+    size_t x,y;
+    printf("****************************\n");
+    for(y=block->uppery;y<=block->lowery;y++)
+    {
+        printf("|");
+        for(x=block->upperx;x<=block->lowerx;x++)
+        {
+            printf("%i|",M[y][x]);
+        }
+        printf("\n");
+    }
+}
+
+
+Coords* optiM(Coords* Msize,
+          unsigned char M[Msize->y][Msize->x],
+          unsigned char opti[Msize->y/12+1][Msize->x/12+1])
+{
+    Coords* OPMsize = newcoords();
+    OPMsize->x = Msize->x/12+1;
+    OPMsize->y = Msize->y/12+1;
+    size_t i,j;
+    for (j=0; j<OPMsize->y; j++)
+    {
+        for(i=0; i<OPMsize->x; i++)
+        {
+            opti[j][i]=isblack(i*12,j*12,Msize,M);
+        }
+    }
+    return OPMsize;
+}
+
+int isblack(size_t x, size_t y ,
+            Coords* coords,
+            unsigned char M[coords->x][coords->y])
+{
+    int ext = 0;
+    size_t i = 1, j = 1, tmp = 3; 
+    while ((!ext && (y+j<coords->y)) &&(j<12))
+    {
+        if(tmp==1)
+        {
+            i=3;
+            tmp = 3;
+        }
+        else
+        {
+            i=1;
+            tmp = 1;
+        }
+        while ((!ext && (x+i<coords->x)) && (i<12))
+        {
+            if (M[j+y][i+x]==1)
+            {
+                ext = 1;
+            }
+            i+=4;
+        }
+        j+=2;
+    }
+
+    return ext;
+}
+
+BiBlock* Xcut(Block* block,Coords* size,unsigned char M[size->x][size->y])
+{
+    size_t i=block->upperx,j=block->uppery;
+    int first = 0;
+    int second = 0;
+    int sum=0;
+    Block* block1 = NULL;
+    Block* block2 = NULL;
+    while((i<=block->lowerx)&&(!second))
+    {
+        j=block->uppery;
+        sum=0;
+        while((j<=block->lowery)&&(first==1))
+        {
+            if(M[j][i]==1)
+            {
+                sum += 1;
+                break;
+            }
+            j+=1;
+        }
+        if((sum==0)&&(first==1))
+        {
+            block1->lowerx = i-1;
+            first=2;
+        }
+   
+        while((j<=block->lowery)&&(first==0))
+        {
+            if(M[j][i]==1)
+            {
+                first = 1;
+                block1 = newblock(i,block->uppery,block->lowerx,block->lowery);
+            }
+            j+=1;
+        }
+        
+        while(((j<=block->lowery)&&(!second))&&(first==2))
+        {
+            if(M[j][i]==1)
+            {
+                second = 1;
+                block2 = newblock(i,block->uppery,block->lowerx,block->lowery);
+            }
+            j+=1;
+        }      
+        i+=1;
+    }
+    BiBlock* ext = newbiblock(block1,block2);
+    return ext;
+}
+
+
+
+BiBlock* Ycut(Block* block,Coords* size,unsigned char M[size->x][size->y])
+{
+    size_t i=block->upperx,j=block->uppery;
+    int first = 0;
+    int second = 0;
+    int sum=0;
+    Block* block1 = NULL;
+    Block* block2 = NULL;
+    while((j<=block->lowery)&&(!second))
+    {
+        i=block->upperx;
+        sum=0;
+        while((i<=block->lowerx)&&(first==1))
+        {
+            if(M[j][i]==1)
+            {
+                sum += 1;
+                break;
+            }
+            i+=1;
+        }
+        if((sum==0)&&(first==1))
+        {
+            block1->lowery = j-1;
+            first=2;
+        }
+   
+        while((i<=block->lowerx)&&(first==0))
+        {
+            if(M[j][i]==1)
+            {
+                first = 1;
+                block1 = newblock(block->upperx,j,block->lowerx,block->lowery);
+            }
+            i+=1;
+        }
+        
+        while(((i<=block->lowerx)&&(!second))&&(first==2))
+        {
+            if(M[j][i]==1)
+            {
+                second = 1;
+                block2 = newblock(block->upperx,j,block->lowerx,block->lowery);
+            }
+            i+=1;
+        }      
+        j+=1;
+    }
+    BiBlock* ext = newbiblock(block1,block2);
+    return ext;
+}
+
+
+Node* __buildtreeX(Node* tree, Coords* size,unsigned char M[size->x][size->y])
+{
+    
+    BiBlock* children = Xcut(tree->block,size,M);
+    if(children->lower!=NULL)
+    {
+        tree->left = newNode();
+        tree->right = newNode();
+        tree->left->block = children->upper;
+        tree->right->block = children->lower;
+        tree->left = __buildtreeY(tree->left,size,M);
+        tree->right = __buildtreeY(tree->right,size,M);
+        return tree;
+    }
+    else
+    {
+        tree->block =children->upper;
+        children = Ycut(tree->block,size,M);
+        if (children->lower!=NULL)
+        {
+            tree->left = newNode();
+            tree->right = newNode();
+            tree->left->block = children->upper;
+            tree->right->block = children->lower;
+            tree->left = __buildtreeX(tree->left,size,M);
+            tree->right = __buildtreeX(tree->right,size,M);
+        }
+        else
+        {
+            tree->block =children->upper;
+        }
+        
+
+        ///////////////////////////////////////////////
+        printB(tree->block,size,M);
+        printf("leaf\n");
+        ///////////////////////////////////////////////
+        return tree;
+    }
+    
+}
+
+Node* __buildtreeY(Node* tree, Coords* size,unsigned char M[size->x][size->y])
+{
+    BiBlock* children = Ycut(tree->block,size,M);
+    if(children->lower!=NULL)
+    {
+        tree->left = newNode();
+        tree->right = newNode();
+        tree->left->block = children->upper;
+        tree->right->block = children->lower;
+        tree->left = __buildtreeX(tree->left,size,M);
+        tree->right = __buildtreeX(tree->right,size,M);
+        return tree;
+    }
+    else
+    {
+        tree->block =children->upper;
+        children = Xcut(tree->block,size,M);
+        if (children->lower!=NULL)
+        {
+            tree->left = newNode();
+            tree->right = newNode();
+            tree->left->block = children->upper;
+            tree->right->block = children->lower;
+            tree->left = __buildtreeY(tree->left,size,M);
+            tree->right = __buildtreeY(tree->right,size,M);
+        }
+        else
+        {
+            tree->block =children->upper;
+        }
+        
+        ///////////////////////////////////////////////
+        printB(tree->block,size,M);
+        printf("leaf\n");
+        ///////////////////////////////////////////////
+        return tree;
+    }
+    
+}
+
+
+void seg(Coords* size,unsigned char M[size->x][size->y])
+{
+    Node* root = newNode();
+    root->block = newblock(0,0,size->x-1,size->y-1);
+    root = __buildtreeX(root,size,M);
+    printB(root->block,size,M);
 }
