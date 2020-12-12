@@ -7,14 +7,11 @@
 #define LAYOUT_IMG    "org.ctext.layout_img"
 
 gboolean resize_image(GtkWidget *widget, GdkRectangle *allocation,
-                       app_widgets* widgets) {
-  int x,y,w,h;
+                      app_widgets *widgets) {
+  int x, w, h;
   GdkPixbuf *pxbscaled;
   GtkWidget *image = GTK_WIDGET(widgets->img_previewer);
-  GdkPixbuf *pixbuf= widgets->pix_buf;
-
-  x = 0;
-  y = 0;
+  GdkPixbuf *pixbuf = widgets->pix_buf;
 
   h = allocation->height;
   w = (gdk_pixbuf_get_width(pixbuf) * h) / gdk_pixbuf_get_height(pixbuf);
@@ -23,25 +20,25 @@ gboolean resize_image(GtkWidget *widget, GdkRectangle *allocation,
 
   if (w < allocation->width) {
     x = (allocation->width - w) / 2;
-    gtk_layout_move(GTK_LAYOUT(widget), image, x, y);
+    gtk_layout_move(GTK_LAYOUT(widget), image, x, 0);
   }
 
   gtk_image_set_from_pixbuf(GTK_IMAGE(image), pxbscaled);
-  g_object_unref (pxbscaled);
+  g_object_unref(pxbscaled);
   return FALSE;
 }
 
 void on_file_selected(__attribute__ ((unused))GtkButton *button,
-                      app_widgets* widgets) {
+                      app_widgets *widgets) {
 
   gchar *filename = gtk_file_chooser_get_filename(widgets->w_dlg_file_choose);
-  gtk_image_set_from_file(widgets->img_previewer, filename);
-  widgets->pix_buf = gdk_pixbuf_new_from_file (filename, NULL);
+  widgets->pix_buf = gdk_pixbuf_new_from_file(filename, NULL);
+  gtk_image_set_from_pixbuf(widgets->img_previewer, widgets->pix_buf );
+  gtk_widget_destroy(GTK_WIDGET(widgets->w_dlg_file_choose));
   g_signal_connect(widgets->layout_img,
                    "size-allocate",
                    G_CALLBACK(resize_image),
                    widgets);
-  gtk_widget_destroy (GTK_WIDGET(widgets->w_dlg_file_choose));
 }
 
 int launch_application(int argc, char **argv) {
@@ -66,11 +63,13 @@ int launch_application(int argc, char **argv) {
   widgets->w_dlg_file_choose =
       GTK_FILE_CHOOSER(gtk_builder_get_object(builder, W_DIALG_ID));
   widgets->btn_ok = GTK_BUTTON(gtk_builder_get_object(builder, BTN_DIALG_OK));
-  widgets->img_previewer = GTK_IMAGE(gtk_builder_get_object(builder, IMG_PREVIEWER));
+  widgets->btn_deroul = GTK_BUTTON(gtk_builder_get_object(builder, "org.ctext"
+                                                          ".btn_deroulant"));
+  widgets->img_previewer =
+      GTK_IMAGE(gtk_builder_get_object(builder, IMG_PREVIEWER));
 
   // Connect signals
   gtk_builder_connect_signals(builder, widgets);
-
 
   g_object_unref(builder);
 

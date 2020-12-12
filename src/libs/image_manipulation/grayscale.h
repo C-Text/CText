@@ -1,7 +1,7 @@
 /**
-  *Author: Lise Giraud
-  *Date: 22/10/2020
-  *File's name: grayscale.h
+  * Author: Lise Giraud
+  * Date: 22/10/2020
+  * File's name: grayscale.h
   */
 
 #ifndef CTEXT_SRC_PREPROCESSING_GRAYSCALE_H_

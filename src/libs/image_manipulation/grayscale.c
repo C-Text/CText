@@ -2,15 +2,15 @@
 #include "pixel_operations.h"
 
 /**
-  *Author: Lise Giraud
-  *Date: 22/10/2020
-  *File's name: grayscale.c
+  * Author: Lise Giraud
+  * Date: 22/10/2020
+  * File's name: grayscale.c
   */
 
 /**
-  *Convert colored image into grayscale image.
+  * Convert colored image into grayscale image.
   *
-  *@param image_surface is the image to convert into grayscale.
+  * @param image_surface is the image to convert into grayscale.
   */
 void grayscale(SDL_Surface *image_surface) {
   int w = image_surface->w;

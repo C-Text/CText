@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include "libs/neural_network/neuralnetwork.h"
+#include "libs/neural_network/train.h"
 #include "libs/application/application.h"
 
 int main(int argc, char **argv) {
+  training();
+  return 0;
   if (argc == 1) {
     // Launch interface
     return launch_application(argc, argv);
   }
+
   printf("Called: %s\n", argv[0]);
   double inputs[1][2] = {
       {0.05, 0.1}

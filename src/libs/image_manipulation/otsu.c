@@ -1,7 +1,7 @@
 /**
-  *Author: Lise Giraud and Valentin Chassignol
-  *Date: 24/10/2020
-  *File's name : otsu.c
+  * Author: Lise Giraud and Valentin Chassignol
+  * Date: 24/10/2020
+  * File's name : otsu.c
   */
 
 #include <err.h>
@@ -11,26 +11,26 @@
 #include "grayscale.h"
 
 /**
-  *Calculation of the median in the histogram between start and end values.
+  * Calculation of the median in the histogram between start and end values.
   *
-  *@param histo is the histogram of grayscale in a given image.
-  *@param start is where to start to calculate the median.
-  *@param end is where to end to calculate the median.
+  * @param histo is the histogram of grayscale in a given image.
+  * @param start is where to start to calculate the median.
+  * @param end is where to end to calculate the median.
   *
-  *@return the median value between start and end in the histogram.
+  * @return the median value between start and end in the histogram.
   */
 int mean(unsigned int *histo, int start, int end) {
   return histo[end - start];
 }
 
 /**
-  *Calculate the sum between start and end (end excluded) of the histogram.
+  * Calculate the sum between start and end (end excluded) of the histogram.
   *
-  *@param *histo is the histogram of grayscale in a given image.
-  *@param start is where to start the calculus.
-  *@param end is where to end the calculus (end is excluded).
+  * @param *histo is the histogram of grayscale in a given image.
+  * @param start is where to start the calculus.
+  * @param end is where to end the calculus (end is excluded).
   *
-  *@return the sum of all the values between start and end.
+  * @return the sum of all the values between start and end.
   */
 int sum(unsigned int *histo, int start, int end) {
   int sum = 0;
@@ -40,20 +40,20 @@ int sum(unsigned int *histo, int start, int end) {
 }
 
 /**
-  *Make the grayscale histogram of a given image.
+  * Make the grayscale histogram of a given image.
   *
-  *@param histo is the histogram to complete.
-  *@param w is the weight of the image.
-  *@param h is the height of the image.
-  *@param image_surface is the given image to make histogram.
+  * @param histo is the histogram to complete.
+  * @param w is the weight of the image.
+  * @param h is the height of the image.
+  * @param image_surface is the given image to make histogram.
   */
 void histo(unsigned int histo[256], unsigned w, unsigned h,
            SDL_Surface *image_surface) {
-  Uint8 gray;
 
   for (size_t i = 0; i < w; i++) {
     for (size_t j = 0; j < h; j++) {
       Uint32 pixel = get_pixel(image_surface, i, j);
+      Uint8 gray;
       SDL_GetRGB(pixel, image_surface->format,
                  &gray, &gray, &gray);
       histo[gray] += 1;
