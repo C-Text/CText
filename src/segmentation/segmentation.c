@@ -220,20 +220,20 @@ int main()
     };
     */
     unsigned char image[][14] = {
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,1,1,0,0,0,0,0,0,0,0,0,0,0},
-        {1,1,1,0,0,0,0,0,0,0,1,1,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {0,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {0,0,1,1,1,1,1,1,1,1,1,1,1,1},
+        {0,0,0,1,1,1,1,1,1,1,1,1,1,1},
+        {0,0,0,0,1,1,1,1,1,1,1,1,1,1},
+        {0,0,0,0,0,1,1,1,1,1,1,1,1,1},
+        {0,0,0,0,0,0,1,1,1,1,1,1,1,1},
+        {0,0,0,0,0,0,0,1,1,1,1,1,1,1},
+        {0,0,0,0,0,0,0,0,1,1,1,1,1,1},
+        {0,0,0,0,0,0,0,0,0,1,1,1,1,1},
+        {0,0,0,0,0,0,0,0,0,0,1,1,1,1},
+        {0,0,0,0,0,0,0,0,0,0,0,1,1,1},
+        {0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,1}
     };
 
 
@@ -251,7 +251,8 @@ int main()
     printM(opmsize,opi);
     */
 
-    word_seg(test,matsize,image);
+    //word_seg(test,matsize,image);
+    line_seg(test,matsize,image);
     printf("%s\n",test->M);
   return 0;
 }
@@ -279,7 +280,7 @@ void hori_histo(unsigned int ext[],
   for (unsigned int y = 0; y < histolen; y++) 
   {
     ext[y] = 0;
-    for (unsigned int x = block->upperx; x < block->lowerx; x++) 
+    for (unsigned int x = block->upperx; x <= block->lowerx; x++) 
     {
       ext[y] += img[y+block->uppery][x];
       //printf("%u",img[y][x]);
@@ -344,7 +345,7 @@ void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
     }
     block->M = ext;
 
-    /*
+    
     for(size_t i =0; i< histolen; i++)
     {
         for (unsigned int y = 0; y< ho_histo[i]; y++)
@@ -354,7 +355,7 @@ void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
         printf("%u",ho_histo[i]);
         printf("\n");
     }
-    */
+    
 }
 
 
@@ -465,6 +466,8 @@ void vert_histo(Block* block,
                 unsigned char img[size->y][size->x])
                  {
   size_t x, y;
+  //printf("x=%lu y=%lu \nx'=%lu y'=%lu\n",block->upperx,block->uppery,block->lowerx,block->lowery);
+  //printf("histolen=%lu\n",histolen);
   for (x = 0; x < histolen; x++)
   {
     ext[x] = 0;
