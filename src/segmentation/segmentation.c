@@ -132,7 +132,7 @@ Coords* optiM(Coords* Msize,
 
 void seg(Coords* size,unsigned char M[size->x][size->y]);
 
-
+void printcoords(Block* block);
 
 void hori_histo(unsigned int ext[],
                 Block* block,
@@ -144,13 +144,9 @@ void vert_histo(Block* block,
                 unsigned int ext[],
                 Coords* size,
                 unsigned char img[size->y][size->x]);
-void letter_seg(size_t upper,
-                size_t lower,
-                size_t left,
-                size_t right,
-                size_t sizex,
-                size_t sizey,
-                unsigned char img[sizey][sizex]);
+void letter_seg(Block* block,
+                Coords* size,
+                unsigned char img[size->y][size->x]);
 void word_seg(Block* block,
               Coords* size,
               unsigned char img[size->y][size->x]);
@@ -219,7 +215,7 @@ int main()
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
     */
-   /*
+    /*
     unsigned char image[][14] = {
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1},
         {0,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -244,12 +240,12 @@ int main()
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {1,1,0,1,0,0,0,0,0,0,0,0,0,0},
-        {1,1,1,1,1,0,0,0,0,0,1,1,1,1},
+        {1,1,1,1,1,1,0,0,0,0,0,1,1,1},
         {1,0,0,0,0,0,0,0,0,0,0,1,1,1},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {1,0,1,0,1,0,0,0,1,0,1,0,0,0},
-        {1,1,0,1,0,0,0,1,1,1,1,0,0,0},
+        {1,0,1,0,1,0,0,0,1,0,0,0,0,0},
+        {1,1,0,1,0,0,0,1,1,1,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
@@ -322,6 +318,10 @@ void hori_histo(unsigned int ext[],
  */
 void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
 {
+    /*
+    printB(block,size,img);
+    printf("line\n");
+    */
     size_t histolen = block->lowery - block->uppery+1;
     unsigned int ho_histo[histolen];
     hori_histo(ho_histo,block,histolen,size,img);
@@ -346,17 +346,18 @@ void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
                 y-=1;
             }
             sousblock->lowery = y;
-            
-            word_seg(sousblock, size, img);
-            ext = concat(ext,link,sousblock->M);
-            
-            /////////////////////////////////////////
-            //printB(sousblock,size,img);
+
             /////////////////////////////////////////
             /*
-            printf("upper = %lu \nladder = %lu\n",
-            sousblock->uppery,sousblock->lowery);
+            printB(sousblock,size,img);
+            printcoords(sousblock);
+            printf("L_seg histolen=%lu\n",histolen);
             */
+            /////////////////////////////////////////
+
+            word_seg(sousblock, size, img);
+            ext = concat(ext,link,sousblock->M);
+
         }
         y += 1;
     }
@@ -392,12 +393,17 @@ void word_seg(Block* block,
               Coords* size,
               unsigned char img[size->y][size->x])
 {
+    /*
+    printB(block,size,img);
+    printf("word\n");
+    */
+
     size_t histolen = block->lowerx - block->upperx+1;
     unsigned int ver_histo[histolen];
     vert_histo(block,histolen,ver_histo,size,img);
 
     char* ext ="";
-    char* link =" ";
+    char* link ="_";
     
     Block* sousblock = newblock(block->upperx,block->uppery,
     block->lowerx,block->lowery);
@@ -412,6 +418,7 @@ void word_seg(Block* block,
         //printf("x=%lu",x);
         if (ver_histo[x] != 0) 
         {
+
             sousblock->upperx = x+block->upperx;
             space_finder = 1;
             nbspace = 0;
@@ -421,30 +428,48 @@ void word_seg(Block* block,
                 if (ver_histo[x] == 0) 
                 {
                     nbspace += 1;
-                    if (height/nbspace < 4) 
+                    if (height/nbspace <= 4) 
                     {
                         space_finder = 0;
                         sousblock->lowerx =block->upperx + x - nbspace;
+
+                        /////////////////////////////////////////
                         /*
-                        ext = concat(ext,link,sousblock->M);
+                        printB(sousblock,size,img);
+                        printcoords(sousblock);
+                        printf("w_seg histolen=%lu\n",histolen);
                         */
                         /////////////////////////////////////////
-                        //printB(sousblock,size,img);
-                        /////////////////////////////////////////
+
+                        letter_seg(sousblock,size,img);
+                        ext = concat(ext,link,sousblock->M);
+                        
+                        
                     }
                 }
                 x += 1;
             }
             if(x==histolen)
             {
-                sousblock->lowerx = block->lowerx;
+                if(space_finder==0)
+                {
+                    sousblock->lowerx = block->lowerx;
+                }
+                else
+                {
+                    sousblock->lowerx = block->lowerx-nbspace;
+                }
+                /////////////////////////////////////////
                 /*
-                ext = concat(ext,link,sousblock->M);
+                printB(sousblock,size,img);
+                printcoords(sousblock);
+                printf("w_seg histolen=%lu\n",histolen);
                 */
                 /////////////////////////////////////////
-                //printf("finalblock");
-                //printB(sousblock,size,img);
-                /////////////////////////////////////////
+
+                letter_seg(sousblock,size,img);
+                ext = concat(ext,link,sousblock->M);
+                
             }
         }
         else 
@@ -516,40 +541,71 @@ void vert_histo(Block* block,
  * the neural network is called for each segmented letter to analyse them.
  * @author matthieu
  * @param img analysed image
- * @param sizex horizontal size of img
- * @param sizey verticale size of img
- * @param upper limit the histogram to a precise max in img[][]
- * @param lower limit the histogram to a precise min in img[][]
- * @param left specify from which indexe to start each word
- * @param right specify from which indexe to end each word
+ * @param block contains the coordonates that needs to be processed
+ * by the fonction.
+ * @param size struct that contains the size (x,y) of img[y][x]
  * 
  */
-/*
 void letter_seg(Block* block,
                 Coords* size,
-                unsigned char img[size->y][size->x]) {
-  unsigned int word_histo[right - left + 1];
-  vert_histo(upper, lower, word_histo, sizex, sizey, img, left, right);
+                unsigned char img[size->y][size->x])
+{
+    /*
+    printB(block,size,img);
+    printf("letter\n");
+    printcoords(block);
+    */
 
-  size_t x = 0;
-  size_t y = 0;
-  while (x < right - left + 1) {
-    if (word_histo[x] != 0) {
-      y = x;
-      while (word_histo[y] != 0) {
-        x += 1;
-      }
-      */
-      /* insert call to neural network */
-      /*
-    }
-    else
+    size_t histolen = block->lowerx - block->upperx+1;
+    unsigned int word_histo[histolen];
+    vert_histo(block,histolen,word_histo,size,img);
+    /*
+    printf("histo:\n");
+    for(size_t i =0; i< histolen;i++)
     {
-      x += 1;
+        printf("%u\n",word_histo[i]);
     }
+    */
 
-  }
-}*/
+    char* ext ="";
+    char* link ="";
+    
+    Block* sousblock = newblock(block->upperx,block->uppery,
+    block->lowerx,block->lowery);
+
+    size_t x = 0;
+    size_t height = block->lowery - block->uppery +1;
+    size_t length = block->lowerx - block->upperx + 1;
+    //printf("lenght = %lu\n",length);
+    while (x < length)
+    {
+        if (word_histo[x] != 0)
+        {
+            sousblock->upperx = block->upperx + x;
+            while ((word_histo[x] != 0)&&(x < length))
+            {
+                x += 1;
+            }
+            sousblock->lowerx = block->upperx + x-1;
+            /* insert call to neural network */
+            /////////////////////////////////////////
+            /*
+            printB(sousblock,size,img);
+            printcoords(sousblock);
+            printf("l_seg histolen=%lu\n",histolen);
+            */
+            /////////////////////////////////////////
+            sousblock->M = "l";
+            ext = concat(ext,link,sousblock->M);
+        }
+        else
+        {
+            x += 1;
+        }
+    }
+    printf("%s\n",ext);
+    block->M = ext;
+}
 ///////////////////////////////////////////////////////////////////////////////////
 
 
@@ -581,6 +637,13 @@ void printB(Block* block,Coords* size, unsigned char M[size->x][size->y])
         printf("\n");
     }
 }
+
+void printcoords(Block* block)
+{
+    printf("upper: x=%lu y=%lu\n",block->upperx,block->uppery);
+    printf("lower: x=%lu y=%lu\n",block->lowerx,block->lowery);
+}
+
 
 
 Coords* optiM(Coords* Msize,
