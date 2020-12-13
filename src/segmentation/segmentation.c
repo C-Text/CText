@@ -131,7 +131,7 @@ Coords* optiM(Coords* Msize,
             unsigned char M[Msize->y][Msize->x],
             unsigned char opti[Msize->y/12+1][Msize->x/12+1]);
 
-void seg(Coords* size,unsigned char M[size->x][size->y]);
+Node* seg(Coords* size,unsigned char M[size->x][size->y]);
 
 void printcoords(Block* block);
 
@@ -625,7 +625,7 @@ void letter_seg(Block* block,
             /* insert call to neural network */
             sousblock->M = "l";
             /* insert call to neural network */
-            
+
             ext = concat2(ext,sousblock->M);
         }
         else
@@ -907,12 +907,15 @@ Node* __buildtreeX(Node* tree, Coords* size,unsigned char M[size->x][size->y])
         else
         {
             tree->block =children->upper;
+            line_seg(tree->block,size,M);
         }
         
 
         ///////////////////////////////////////////////
+        /*
         printB(tree->block,size,M);
         printf("leaf\n");
+        */
         ///////////////////////////////////////////////
         return tree;
     }
@@ -948,11 +951,13 @@ Node* __buildtreeY(Node* tree, Coords* size,unsigned char M[size->x][size->y])
         else
         {
             tree->block =children->upper;
+            line_seg(tree->block,size,M);
         }
-        
         ///////////////////////////////////////////////
+        /*
         printB(tree->block,size,M);
         printf("leaf\n");
+        */
         ///////////////////////////////////////////////
         return tree;
     }
@@ -960,12 +965,13 @@ Node* __buildtreeY(Node* tree, Coords* size,unsigned char M[size->x][size->y])
 }
 
 
-void seg(Coords* size,unsigned char M[size->x][size->y])
+Node* seg(Coords* size,unsigned char M[size->x][size->y])
 {
     Node* root = newNode();
     root->block = newblock(0,0,size->x-1,size->y-1);
     root = __buildtreeX(root,size,M);
-    printB(root->block,size,M);
+    //printB(root->block,size,M);
+    return root;
 }
 
 char* concat(char *str1,char *link ,char *str2)
