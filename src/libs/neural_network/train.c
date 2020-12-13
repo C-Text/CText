@@ -15,29 +15,30 @@ char result_elements[] = {
     '\'', '(', ')', '[', ']', '-', '%'
 };
 
-double *get_matrix(SDL_Surface *image) {
+double *get_matrix(SDL_Surface *image_surface) {
   // Create the new array
   int length = 32;
   double *array = calloc(length * length, sizeof(double));
 
   // convert the image into matrix
-  Uint8 r, g, b;
-  for (int i = 0; i < length; i++) {
-    for (int j = 0; j < length; j++) {
-      if (i >= image->w || j >= image->h) {
-        array[i * length + j] = 0;
-      } else {
-        Uint32 pixel = (get_pixel(image, i, j));
-        SDL_GetRGB(pixel, image->format, &r, &b, &g);
-
-        // if the pixel is black ->1 else -> 0
-        if (r < 240 && g < 240 && b < 240)
-          array[i * length + j] = 1;
-        else
-          array[i * length + j] = 0;
-      }
+  for (int j = 0; j < image_surface->h; j++) {
+    for (int i = 0; i < image_surface->w; i++) {
+      Uint8 r, g, b;
+      Uint32 pixel = get_pixel(image_surface, i, j);
+      SDL_GetRGB(pixel, image_surface->format, &r, &g, &b);
+      // if the pixel is black ->1 else -> 0
+      array[j * length + i] = ((r + b + g) / 3 < 240) ? 1 : 0;
     }
+
   }
+
+  /*for (int i = 0; i < 1024; i++) {
+    if (i % 32 == 0)
+      printf("\n");
+    printf("%d", (int) array[i]);
+  }
+
+  printf("\n");*/
   return array;
 }
 
@@ -50,7 +51,8 @@ size_t run(NeuralNetwork *network, double entry[]) {
 
   // Find th index of the max probability of the output
   size_t i_index = 0;
-  for (unsigned long i = 0; i < ((List) (network->layers->last->value))->length; i++) {
+  for (unsigned long i = 0; i < ((List) (network->layers->last->value))->length;
+       i++) {
     n = (Neuron *) (output_neurons->value);
     if (max_proba < n->value) {
       max_proba = n->value;
@@ -61,28 +63,27 @@ size_t run(NeuralNetwork *network, double entry[]) {
   return i_index;
 }
 
-
 void training() {
   // Save all images into an array
   double **models = malloc(sizeof(char *) * 74);
-  double *expected = malloc(sizeof (double ) * 74);
+  double *expected = malloc(sizeof(double) * 74);
 
   char paths[] = "src/assets/font-01/letter000.bmp";
 
   int index_in = 0;
   for (int m = 0; m < 74; m++) {
-      SDL_Surface *image = SDL_LoadBMP(paths);
-      models[index_in] = get_matrix(image);
-      index_in++;
-      if (paths[27] == '9') {
-        paths[27] = '0';
-        paths[26]++;
-      } else
-        paths[27]++;
+    SDL_Surface *image = SDL_LoadBMP(paths);
+    models[index_in] = get_matrix(image);
+    index_in++;
+    if (paths[27] == '9') {
+      paths[27] = '0';
+      paths[26]++;
+    } else
+      paths[27]++;
   }
 
   size_t nb_neurons_per_layer[4] = {
-      1024, 100,100,74
+      1024, 100, 100, 74
   };
   NeuralNetwork network;
 
@@ -93,15 +94,15 @@ void training() {
       save_neural_network(&network, "src/assets/trained-network.txt");
     }
 
-    for(int c = 0; c < 74; c++) {
+    for (int c = 0; c < 74; c++) {
       propagation(&network, models[c]);
       expected[c] = 1;
       backpropagation(&network, expected, 0.1);
       expected[c] = 0;
     }
   }
-  for(int c = 0; c < 74; c++) {
+  for (int c = 0; c < 74; c++) {
     printf("%c -> %c\n", result_elements[c], result_elements[run(&network,
-                                                                models[c])]);
+                                                                 models[c])]);
   }
 }

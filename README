@@ -19,6 +19,8 @@ make
 = Launch =
 ./CText.exe
 
+./CText.exe -t : Train the neural network
+
 = Contribute =
 
 git clone https://github.com/C-Text/CText.git
