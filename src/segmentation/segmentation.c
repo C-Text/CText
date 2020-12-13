@@ -243,13 +243,13 @@ int main()
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {1,1,1,1,1,0,0,0,1,1,1,1,1,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {1,1,0,1,0,0,0,0,0,0,0,0,0,0},
+        {1,1,1,1,1,0,0,0,0,0,1,1,1,1},
+        {1,0,0,0,0,0,0,0,0,0,0,1,1,1},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {1,0,1,0,1,0,0,0,1,0,1,0,0,0},
+        {1,1,0,1,0,0,0,1,1,1,1,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
@@ -268,8 +268,8 @@ int main()
     printM(opmsize,opi);
     */
 
-    word_seg(test,matsize,image);
-    //line_seg(test,matsize,image);
+    //word_seg(test,matsize,image);
+    line_seg(test,matsize,image);
     printf("%s\n",test->M);
   return 0;
 }
@@ -346,12 +346,12 @@ void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
                 y-=1;
             }
             sousblock->lowery = y;
-            /*
+            
             word_seg(sousblock, size, img);
             ext = concat(ext,link,sousblock->M);
-            */
+            
             /////////////////////////////////////////
-            printB(sousblock,size,img);
+            //printB(sousblock,size,img);
             /////////////////////////////////////////
             /*
             printf("upper = %lu \nladder = %lu\n",
@@ -362,7 +362,7 @@ void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
     }
     block->M = ext;
 
-    
+    /*
     for(size_t i =0; i< histolen; i++)
     {
         for (unsigned int y = 0; y< ho_histo[i]; y++)
@@ -372,7 +372,7 @@ void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
         printf("%u",ho_histo[i]);
         printf("\n");
     }
-    
+    */
 }
 
 
@@ -411,7 +411,7 @@ void word_seg(Block* block,
 
     while (x < histolen) 
     {
-        printf("x=%lu",x);
+        //printf("x=%lu",x);
         if (ver_histo[x] != 0) 
         {
             sousblock->upperx = x+block->upperx;
@@ -419,7 +419,7 @@ void word_seg(Block* block,
             nbspace = 0;
             while ((space_finder) && (x < histolen)) 
             {
-                printf(" x'=%lu\n",x);
+                //printf(" x'=%lu\n",x);
                 if (ver_histo[x] == 0) 
                 {
                     nbspace += 1;
@@ -431,7 +431,7 @@ void word_seg(Block* block,
                         ext = concat(ext,link,sousblock->M);
                         */
                         /////////////////////////////////////////
-                        printB(sousblock,size,img);
+                        //printB(sousblock,size,img);
                         /////////////////////////////////////////
                     }
                 }
@@ -444,8 +444,8 @@ void word_seg(Block* block,
                 ext = concat(ext,link,sousblock->M);
                 */
                 /////////////////////////////////////////
-                printf("finalblock");
-                printB(sousblock,size,img);
+                //printf("finalblock");
+                //printB(sousblock,size,img);
                 /////////////////////////////////////////
             }
         }
