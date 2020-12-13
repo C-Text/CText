@@ -234,6 +234,7 @@ int main()
         {0,0,0,0,0,0,0,0,0,0,0,0,0,1}
     };
     */
+   /*
     unsigned char image[][14] = {
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -256,6 +257,7 @@ int main()
     matsize->y = 14;
     printM(matsize,image);
     Block* test = newblock(0,0,matsize->x-1,matsize->y-1);
+    */
     //seg(matsize,image);
 
     /*
@@ -266,14 +268,14 @@ int main()
     */
     
     //word_seg(test,matsize,image);
-    line_seg(test,matsize,image);
+    //line_seg(test,matsize,image);
     /*
     test->M = "l";
     char* ah = "ah";
     char* link = "";
     test->M = concat(test->M,link,ah);
     */
-    printf("%s\n",test->M);
+    //printf("%s\n",test->M);
   return 0;
 }
 

@@ -1,32 +1,31 @@
 #ifndef SEGMENTATION_H
 #define SEGMENTATION_H
-
 #include <stdlib.h>
 
+void printB(Block* block,
+            Coords* coords,
+            unsigned char M[coords->x][coords->y]);
+void printM(Coords* coords,
+            unsigned char M[coords->x][coords->y]);
+Node* seg(Coords* size,unsigned char M[size->x][size->y]);
 void hori_histo(unsigned int ext[],
-                size_t sizex,
-                size_t sizey,
-                unsigned char img[sizey][sizex]);
-void vert_histo(size_t upper,
-                size_t lower,
+                Block* block,
+                size_t histolen,
+                Coords* size,
+                unsigned char img[size->y][size->x]);
+void vert_histo(Block* block,
+                size_t histolen,
                 unsigned int ext[],
-                size_t sizex,
-                size_t sizey,
-                unsigned char img[sizey][sizex],
-                size_t left,
-                size_t right);
-void letter_seg(size_t upper,
-                size_t lower,
-                size_t left,
-                size_t right,
-                size_t sizex,
-                size_t sizey,
-                unsigned char img[sizey][sizex]);
-void word_seg(size_t upper,
-              size_t lower,
-              size_t sizex,
-              size_t sizey,
-              unsigned char img[sizey][sizex]);
-void line_seg(size_t sizex, size_t sizey, unsigned char img[sizey][sizex]);
+                Coords* size,
+                unsigned char img[size->y][size->x]);
+void letter_seg(Block* block,
+                Coords* size,
+                unsigned char img[size->y][size->x]);
+void word_seg(Block* block,
+              Coords* size,
+              unsigned char img[size->y][size->x]);
+void line_seg(Block* block,
+              Coords* size,
+              unsigned char img[size->y][size->x]);
 
 #endif
