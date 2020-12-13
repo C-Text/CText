@@ -7,7 +7,11 @@
   */
 
 #include <stdlib.h>
+#include <err.h>
 #include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 /**
  *get the pixel on coordonates x y of the image.
@@ -37,5 +41,25 @@ void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel);
  *@param image is the image to update.
  */
 void update_surface(SDL_Surface *screen, SDL_Surface *image);
+
+/**
+ *Init only the video part.
+ *@throw error message if it fail.
+ */
+void init_sdl();
+
+/**
+ *Load an image from a given path using SDL_image with format detection.
+ *
+ *@throw error if there is no image at the given path.
+ *@param path: the path of the image to display.
+ *
+ *@return image found at the given path.
+ */
+SDL_Surface *load_image(char *path);
+
+void
+gtk_put_pixel (GdkPixbuf *pixbuf, int x, int y, guchar red, guchar green, guchar
+blue, guchar alpha);
 
 #endif //CTEXT_PIXEL_OPERATIONS_H_

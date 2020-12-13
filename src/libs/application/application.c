@@ -1,8 +1,11 @@
 #include "application.h"
+#include "../image_manipulation/grayscale.h"
 
 #define W_MAIN_ID     "org.ctext.main_window"
 #define W_DIALG_ID    "org.ctext.file_chooser"
 #define BTN_DIALG_OK  "org.ctext.file_chooser.btn_ok"
+#define BTN_NEXT      "org.ctext.btn_next"
+#define BTN_DEROUL    "org.ctext.btn_deroulant"
 #define IMG_PREVIEWER "org.ctext.img_previewer"
 #define LAYOUT_IMG    "org.ctext.layout_img"
 
@@ -34,11 +37,19 @@ void on_file_selected(__attribute__ ((unused))GtkButton *button,
   gchar *filename = gtk_file_chooser_get_filename(widgets->w_dlg_file_choose);
   widgets->pix_buf = gdk_pixbuf_new_from_file(filename, NULL);
   gtk_image_set_from_pixbuf(widgets->img_previewer, widgets->pix_buf );
+  gtk_grayscale(widgets->pix_buf);
   gtk_widget_destroy(GTK_WIDGET(widgets->w_dlg_file_choose));
   g_signal_connect(widgets->layout_img,
                    "size-allocate",
                    G_CALLBACK(resize_image),
                    widgets);
+}
+
+void on_next(__attribute__ ((unused))GtkButton *button,
+                      app_widgets *widgets) {
+
+  gtk_widget_set_sensitive(GTK_WIDGET(widgets->btn_next), FALSE);
+  widgets->step += 1;
 }
 
 int launch_application(int argc, char **argv) {
@@ -63,8 +74,10 @@ int launch_application(int argc, char **argv) {
   widgets->w_dlg_file_choose =
       GTK_FILE_CHOOSER(gtk_builder_get_object(builder, W_DIALG_ID));
   widgets->btn_ok = GTK_BUTTON(gtk_builder_get_object(builder, BTN_DIALG_OK));
-  widgets->btn_deroul = GTK_BUTTON(gtk_builder_get_object(builder, "org.ctext"
-                                                          ".btn_deroulant"));
+  widgets->btn_next = GTK_BUTTON(gtk_builder_get_object(builder, BTN_NEXT));
+  widgets->btn_deroul = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder,
+                                                                  BTN_DEROUL));
+  widgets->step = 0;
   widgets->img_previewer =
       GTK_IMAGE(gtk_builder_get_object(builder, IMG_PREVIEWER));
 
@@ -79,6 +92,10 @@ int launch_application(int argc, char **argv) {
   g_signal_connect(widgets->btn_ok,
                    "clicked",
                    G_CALLBACK(on_file_selected),
+                   widgets);
+  g_signal_connect(widgets->btn_next,
+                   "clicked",
+                   G_CALLBACK(on_next),
                    widgets);
 
   gtk_widget_show(widgets->w_main);

@@ -30,3 +30,29 @@ void grayscale(SDL_Surface *image_surface) {
     }
   }
 }
+
+void gtk_grayscale(GdkPixbuf *pixbuf) {
+  int width, height, rowstride, n_channels;
+  guchar *pixels, *p;
+
+  n_channels = gdk_pixbuf_get_n_channels (pixbuf);
+
+  g_assert (gdk_pixbuf_get_colorspace (pixbuf) == GDK_COLORSPACE_RGB);
+  g_assert (gdk_pixbuf_get_bits_per_sample (pixbuf) == 8);
+  g_assert (gdk_pixbuf_get_has_alpha (pixbuf));
+  g_assert (n_channels == 4);
+
+  width = gdk_pixbuf_get_width (pixbuf);
+  height = gdk_pixbuf_get_height (pixbuf);
+
+  for (int x = 0; x < width; x++){
+    for (int y = 0; y < height; y++){
+      rowstride = gdk_pixbuf_get_rowstride (pixbuf);
+      pixels = gdk_pixbuf_get_pixels (pixbuf);
+
+      p = pixels + y * rowstride + x * n_channels;
+      double average = 0.3 * p[0] + 0.59 * p[1] + 0.11 * p[2];
+      gtk_put_pixel(pixbuf,x,y,average,average,average,p[3]);
+    }
+  }
+}

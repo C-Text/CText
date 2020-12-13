@@ -104,11 +104,13 @@
                 <property name="margin_right">4</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">button</property>
+                  <object class="GtkComboBoxText" id="org.ctext.btn_deroulant">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="can_focus">False</property>
+                    <items>
+                      <item id="1" translatable="yes">Otsu</item>
+                      <item id="2" translatable="yes">Bradley</item>
+                    </items>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -117,22 +119,23 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxText" id="org.ctext.btn_deroulant">
+                  <placeholder/>
+                </child>
+                <child>
+                  <object class="GtkButton" id="org.ctext.btn_next">
+                    <property name="label" translatable="yes">Next</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <items>
-                      <item translatable="yes">Truc 1</item>
-                      <item translatable="yes">Machin 2</item>
-                    </items>
+                    <property name="sensitive">False</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="margin_top">100</property>
+                    <property name="image_position">bottom</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>

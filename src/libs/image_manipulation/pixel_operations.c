@@ -3,10 +3,7 @@
   *Date: 22/10/2020
   *File's name: pixel_operations.c
   */
-#include <err.h>
 #include "pixel_operations.h"
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
 
 /**
   *Init only the video part.
@@ -35,22 +32,6 @@ SDL_Surface *load_image(char *path) {
 
   return img;
 }
-
-/**
- *Init only the video part.
- *@throw error message if it fail.
- */
-void init_sdl();
-
-/**
- *Load an image from a given path using SDL_image with format detection.
- *
- *@throw error if there is no image at the given path.
- *@param path: the path of the image to display.
- *
- *@return image found at the given path.
- */
-SDL_Surface *load_image(char *path);
 
 /**
   *Determines on how many bytes pixels are encoded.
@@ -141,4 +122,22 @@ void update_surface(SDL_Surface *screen, SDL_Surface *image) {
     warnx("BlitSurface error: %s\n", SDL_GetError());
 
   SDL_UpdateRect(screen, 0, 0, image->w, image->h);
+}
+
+void
+gtk_put_pixel (GdkPixbuf *pixbuf, int x, int y, guchar red, guchar green, guchar
+blue, guchar alpha)
+{
+  int rowstride, n_channels;
+  guchar *pixels, *p;
+
+  n_channels = gdk_pixbuf_get_n_channels (pixbuf);
+  rowstride = gdk_pixbuf_get_rowstride (pixbuf);
+  pixels = gdk_pixbuf_get_pixels (pixbuf);
+
+  p = pixels + y * rowstride + x * n_channels;
+  p[0] = red;
+  p[1] = green;
+  p[2] = blue;
+  p[3] = alpha;
 }

@@ -44,7 +44,9 @@ add_executable(
         src/libs/image_manipulation/segmentation.c
         src/libs/image_manipulation/segmentation.h
         src/libs/application/application.c
-        src/libs/application/application.h src/libs/neural_network/train.c src/libs/neural_network/train.h)
+        src/libs/application/application.h
+        src/libs/neural_network/train.c
+        src/libs/neural_network/train.h)
 
 target_link_libraries(CText m ${SDL_LIBRARY} ${SDL_IMAGE_LIBRARIES} ${GTK3_LIBRARIES})
 
