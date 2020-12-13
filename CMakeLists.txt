@@ -45,6 +45,7 @@ add_executable(
         src/libs/image_manipulation/segmentation.h
         src/libs/application/application.c
         src/libs/application/application.h
+        src/libs/application/app.h
         src/libs/neural_network/train.c
         src/libs/neural_network/train.h)
 

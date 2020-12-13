@@ -1,5 +1,7 @@
+#include "app.h"
 #include "application.h"
 #include "../image_manipulation/grayscale.h"
+#include "../image_manipulation/otsu.h"
 
 #define W_MAIN_ID     "org.ctext.main_window"
 #define W_DIALG_ID    "org.ctext.file_chooser"
@@ -16,13 +18,21 @@ gboolean resize_image(GtkWidget *widget, GdkRectangle *allocation,
   GtkWidget *image = GTK_WIDGET(widgets->img_previewer);
   GdkPixbuf *pixbuf = widgets->pix_buf;
 
+  if (allocation == NULL) {
+    gtk_layout_move(GTK_LAYOUT(widget), image, 0, 0);
+    pxbscaled = gdk_pixbuf_scale_simple(pixbuf, 539, 340, GDK_INTERP_BILINEAR);
+    gtk_image_set_from_pixbuf(GTK_IMAGE(image), pxbscaled);
+    return FALSE;
+  }
+
   h = allocation->height;
   w = (gdk_pixbuf_get_width(pixbuf) * h) / gdk_pixbuf_get_height(pixbuf);
 
   pxbscaled = gdk_pixbuf_scale_simple(pixbuf, w, h, GDK_INTERP_BILINEAR);
 
-  if (w < allocation->width) {
-    x = (allocation->width - w) / 2;
+  int max_w =allocation->width;
+  if (w < max_w) {
+    x = (max_w - w) / 2;
     gtk_layout_move(GTK_LAYOUT(widget), image, x, 0);
   }
 
@@ -36,20 +46,30 @@ void on_file_selected(__attribute__ ((unused))GtkButton *button,
 
   gchar *filename = gtk_file_chooser_get_filename(widgets->w_dlg_file_choose);
   widgets->pix_buf = gdk_pixbuf_new_from_file(filename, NULL);
-  gtk_image_set_from_pixbuf(widgets->img_previewer, widgets->pix_buf );
   gtk_grayscale(widgets->pix_buf);
-  gtk_widget_destroy(GTK_WIDGET(widgets->w_dlg_file_choose));
+  gtk_otsu_binarization(widgets->pix_buf);
+  resize_image(GTK_WIDGET(widgets->layout_img), NULL, widgets);
   g_signal_connect(widgets->layout_img,
                    "size-allocate",
                    G_CALLBACK(resize_image),
                    widgets);
+  gtk_widget_destroy(GTK_WIDGET(widgets->w_dlg_file_choose));
 }
 
 void on_next(__attribute__ ((unused))GtkButton *button,
-                      app_widgets *widgets) {
+             app_widgets *widgets) {
 
   gtk_widget_set_sensitive(GTK_WIDGET(widgets->btn_next), FALSE);
   widgets->step += 1;
+}
+
+void on_choose_bin(__attribute__ ((unused))GtkComboBoxText *button,
+                   app_widgets *widgets) {
+  gtk_widget_set_sensitive(GTK_WIDGET(widgets->btn_next), TRUE);
+  gchar *selected = gtk_combo_box_text_get_active_text(widgets->btn_deroul);
+  if (selected[3] == 'u') {
+    gtk_otsu_binarization(widgets->pix_buf);
+  }
 }
 
 int launch_application(int argc, char **argv) {
@@ -96,6 +116,10 @@ int launch_application(int argc, char **argv) {
   g_signal_connect(widgets->btn_next,
                    "clicked",
                    G_CALLBACK(on_next),
+                   widgets);
+  g_signal_connect(widgets->btn_deroul,
+                   "changed",
+                   G_CALLBACK(on_choose_bin),
                    widgets);
 
   gtk_widget_show(widgets->w_main);
