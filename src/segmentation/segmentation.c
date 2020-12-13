@@ -384,11 +384,9 @@ void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
  * letter_seg is called for each segmented word.
  * @author matthieu
  * @param img analysed image
- * @param sizex horizontal size of img
- * @param sizey verticale size of img
- * @param upper limit the histogram to a precise max in img[][]
- * @param lower limit the histogram to a precise min in img[][]
- * 
+ * @param block contains the coordonates that needs to be processed
+ * by the fonction.
+ * @param size struct that contains the size (x,y) of img[y][x]
  */
 void word_seg(Block* block,
               Coords* size,
@@ -469,7 +467,6 @@ void word_seg(Block* block,
     */
 
 }
-///////////////////////////a tester/////////////////////////////////////////
 
 
 
