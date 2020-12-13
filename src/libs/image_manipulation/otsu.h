@@ -39,8 +39,7 @@ int sum(unsigned int *histo, int start, int end);
  *@param h is the height of the image.
  *@param image_surface is the given image to make histogram.
  */
-void histo(unsigned int histo[256], unsigned w, unsigned h,
-           SDL_Surface *image_surface);
+void histo(unsigned int histo[256], GdkPixbuf *pixbuf);
 
 /**
  *Use the otsu's method to calculate the optimal threshold of a grayscale image.
@@ -51,7 +50,7 @@ void histo(unsigned int histo[256], unsigned w, unsigned h,
  *
  *@return the optimal threshold.
  */
-int otsu(unsigned int histo[256], unsigned w, unsigned h);
+int otsu(unsigned int histo[256], unsigned w,unsigned h);
 
 /**
  *Complete the binarization matrice (matrice of 1 and 0).
@@ -64,5 +63,7 @@ int otsu(unsigned int histo[256], unsigned w, unsigned h);
  */
 void binarization(unsigned int w, unsigned int h, char binarization[w][h],
                   int final_t, SDL_Surface *image_surface);
+
+void gtk_otsu_binarization(GdkPixbuf *pixbuf);
 
 #endif //CTEXT_SRC_PREPROCESSING_OTSU_H_

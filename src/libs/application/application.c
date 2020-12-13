@@ -47,7 +47,6 @@ void on_file_selected(__attribute__ ((unused))GtkButton *button,
   gchar *filename = gtk_file_chooser_get_filename(widgets->w_dlg_file_choose);
   widgets->pix_buf = gdk_pixbuf_new_from_file(filename, NULL);
   gtk_grayscale(widgets->pix_buf);
-  gtk_otsu_binarization(widgets->pix_buf);
   resize_image(GTK_WIDGET(widgets->layout_img), NULL, widgets);
   g_signal_connect(widgets->layout_img,
                    "size-allocate",
@@ -70,6 +69,8 @@ void on_choose_bin(__attribute__ ((unused))GtkComboBoxText *button,
   if (selected[3] == 'u') {
     gtk_otsu_binarization(widgets->pix_buf);
   }
+
+  resize_image(GTK_WIDGET(widgets->layout_img), NULL, widgets);
 }
 
 int launch_application(int argc, char **argv) {

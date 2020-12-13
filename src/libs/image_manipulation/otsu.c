@@ -6,9 +6,8 @@
 
 #include <err.h>
 #include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
 #include "pixel_operations.h"
-#include "grayscale.h"
+#include "../application/app.h"
 
 /**
   * Calculation of the median in the histogram between start and end values.
@@ -39,38 +38,27 @@ int sum(unsigned int *histo, int start, int end) {
   return sum;
 }
 
-/**
-  * Make the grayscale histogram of a given image.
-  *
-  * @param histo is the histogram to complete.
-  * @param w is the weight of the image.
-  * @param h is the height of the image.
-  * @param image_surface is the given image to make histogram.
-  */
-void histo(unsigned int histo[256], unsigned w, unsigned h,
-           SDL_Surface *image_surface) {
+void histo(unsigned int histo[256], GdkPixbuf *pixbuf) {
+  int n_channels = gdk_pixbuf_get_n_channels (pixbuf);
 
-  for (size_t i = 0; i < w; i++) {
-    for (size_t j = 0; j < h; j++) {
-      Uint32 pixel = get_pixel(image_surface, i, j);
-      Uint8 gray;
-      SDL_GetRGB(pixel, image_surface->format,
-                 &gray, &gray, &gray);
-      histo[gray] += 1;
+  g_assert (gdk_pixbuf_get_colorspace (pixbuf) == GDK_COLORSPACE_RGB);
+  g_assert (gdk_pixbuf_get_bits_per_sample (pixbuf) == 8);
+  g_assert (gdk_pixbuf_get_has_alpha (pixbuf));
+  g_assert (n_channels == 4);
+
+  int w = gdk_pixbuf_get_width (pixbuf);
+  int h = gdk_pixbuf_get_height (pixbuf);
+  for (int i = 0; i < w; i++)
+    for (int j = 0; j < h; j++) {
+      int rowstride = gdk_pixbuf_get_rowstride (pixbuf);
+      guchar *pixels = gdk_pixbuf_get_pixels (pixbuf);
+
+      guchar *p = pixels + j * rowstride + i * n_channels;
+      histo[p[1]] += 1;
     }
-  }
 }
 
-/**
-  *Use the otsu's method to calculate the optimal threshold of a grayscale image.
-  *
-  *@param histo is the histogram of grayscale of the image.
-  *@param w is the weight of the image.
-  *@param h is the height of the image.
-  *
-  *@return the optimal threshold.
-  */
-int otsu(unsigned int histo[256], unsigned w, unsigned h) {
+int otsu(unsigned int histo[256], unsigned w,unsigned h) {
   double final_thresh = -1.0;
   int final_t = -1;
   double mean_weight = 1.0 / (w * h);
@@ -114,4 +102,36 @@ void binarization(unsigned int w, unsigned int h, char binarization[w][h],
         binarization[i][j] = 0;
     }
   }
+}
+
+void gtk_otsu_binarization(GdkPixbuf *pixbuf) {
+  unsigned int *h = calloc(sizeof(unsigned int), 256);
+  histo(h, pixbuf);
+
+  int width = gdk_pixbuf_get_width(pixbuf);
+  int height = gdk_pixbuf_get_height(pixbuf);
+
+  int final_t = otsu(h, width, height);
+
+  int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
+
+  g_assert (gdk_pixbuf_get_colorspace(pixbuf) == GDK_COLORSPACE_RGB);
+  g_assert (gdk_pixbuf_get_bits_per_sample(pixbuf) == 8);
+  g_assert (gdk_pixbuf_get_has_alpha(pixbuf));
+  g_assert (n_channels == 4);
+
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+      guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
+
+      guchar *p = pixels + y * rowstride + x * n_channels;
+      guchar average = p[0];
+      if (average > final_t)
+        gtk_put_pixel(pixbuf, x, y, 255,255,255, p[3]);
+      else
+        gtk_put_pixel(pixbuf, x, y, 0, 0, 0, p[3]);
+    }
+  }
+
 }
