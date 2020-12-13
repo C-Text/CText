@@ -35,6 +35,7 @@ typedef struct Node
 }Node;
 
 char* concat(char *str1,char *link ,char *str2);
+char* concat2(char *str1,char *str2);
 
 /**
  * 
@@ -263,9 +264,15 @@ int main()
     Coords* opmsize = optiM(matsize,image,opi);
     printM(opmsize,opi);
     */
-
+    
     //word_seg(test,matsize,image);
     line_seg(test,matsize,image);
+    /*
+    test->M = "l";
+    char* ah = "ah";
+    char* link = "";
+    test->M = concat(test->M,link,ah);
+    */
     printf("%s\n",test->M);
   return 0;
 }
@@ -354,9 +361,17 @@ void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
             printf("L_seg histolen=%lu\n",histolen);
             */
             /////////////////////////////////////////
-
             word_seg(sousblock, size, img);
-            ext = concat(ext,link,sousblock->M);
+            if(strlen(ext)==0)
+            {
+                ext = concat2(ext,sousblock->M);
+            }
+            else
+            {
+                
+                ext = concat(ext,link,sousblock->M);
+            }
+            
 
         }
         y += 1;
@@ -403,7 +418,7 @@ void word_seg(Block* block,
     vert_histo(block,histolen,ver_histo,size,img);
 
     char* ext ="";
-    char* link ="_";
+    char* link =" ";
     
     Block* sousblock = newblock(block->upperx,block->uppery,
     block->lowerx,block->lowery);
@@ -442,8 +457,14 @@ void word_seg(Block* block,
                         /////////////////////////////////////////
 
                         letter_seg(sousblock,size,img);
-                        ext = concat(ext,link,sousblock->M);
-                        
+                        if(strlen(ext)==0)
+                        {
+                            ext = concat2(ext,sousblock->M);
+                        }
+                        else
+                        {
+                            ext = concat(ext,link,sousblock->M);
+                        }
                         
                     }
                 }
@@ -468,7 +489,14 @@ void word_seg(Block* block,
                 /////////////////////////////////////////
 
                 letter_seg(sousblock,size,img);
-                ext = concat(ext,link,sousblock->M);
+                if(strlen(ext)==0)
+                {
+                    ext = concat2(ext,sousblock->M);
+                }
+                else
+                {
+                    ext = concat(ext,link,sousblock->M);
+                }
                 
             }
         }
@@ -568,7 +596,6 @@ void letter_seg(Block* block,
     */
 
     char* ext ="";
-    char* link ="";
     
     Block* sousblock = newblock(block->upperx,block->uppery,
     block->lowerx,block->lowery);
@@ -587,7 +614,7 @@ void letter_seg(Block* block,
                 x += 1;
             }
             sousblock->lowerx = block->upperx + x-1;
-            /* insert call to neural network */
+            
             /////////////////////////////////////////
             /*
             printB(sousblock,size,img);
@@ -595,15 +622,18 @@ void letter_seg(Block* block,
             printf("l_seg histolen=%lu\n",histolen);
             */
             /////////////////////////////////////////
+            /* insert call to neural network */
             sousblock->M = "l";
-            ext = concat(ext,link,sousblock->M);
+            /* insert call to neural network */
+            
+            ext = concat2(ext,sousblock->M);
         }
         else
         {
             x += 1;
         }
     }
-    printf("%s\n",ext);
+    //printf("%s\n",ext);
     block->M = ext;
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -952,6 +982,27 @@ char* concat(char *str1,char *link ,char *str2)
         *(p++) = *(str1++);
     }
     *(p++)=*link;
+    while(*str2 != 0)
+    {
+        *(p++)=*(str2++);
+    }
+    *p = 0;
+    return str;
+}
+
+char* concat2(char *str1,char *str2)
+{
+    size_t size = strlen(str1)+1+strlen(str2)+1;
+    char *str = malloc(size * sizeof(char));
+    if(str == NULL)
+    {
+        errx(1,"Mot enough memory!");
+    }
+    char *p = str;
+    while(*str1!=0)
+    {
+        *(p++) = *(str1++);
+    }
     while(*str2 != 0)
     {
         *(p++)=*(str2++);
