@@ -219,6 +219,7 @@ int main()
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
     */
+   /*
     unsigned char image[][14] = {
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1},
         {0,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -235,7 +236,23 @@ int main()
         {0,0,0,0,0,0,0,0,0,0,0,0,1,1},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,1}
     };
-
+    */
+    unsigned char image[][14] = {
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+    };
 
     Coords* matsize = newcoords();
     matsize->x = 14;
@@ -251,8 +268,8 @@ int main()
     printM(opmsize,opi);
     */
 
-    //word_seg(test,matsize,image);
-    line_seg(test,matsize,image);
+    word_seg(test,matsize,image);
+    //line_seg(test,matsize,image);
     printf("%s\n",test->M);
   return 0;
 }
@@ -427,7 +444,7 @@ void word_seg(Block* block,
     }
     block->M = ext;
 
-    
+    /*
     for(size_t i =0; i< histolen; i++)
     {
         for (unsigned int y = 0; y< ver_histo[i]; y++)
@@ -437,7 +454,7 @@ void word_seg(Block* block,
         printf("%u",ver_histo[i]);
         printf("\n");
     }
-    
+    */
 
 }
 ///////////////////////////a tester/////////////////////////////////////////
@@ -472,17 +489,17 @@ void vert_histo(Block* block,
   {
     ext[x] = 0;
     //printf("ext(%lu) = %u\n",x,ext[x]);
-    for (y = block->uppery; y < block->lowery; y++)
+    for (y = block->uppery; y <= block->lowery; y++)
     {
 
-      ext[x] += img[y][x+block->lowerx];
-      printf("%u",img[y][x]);
+      ext[x] += img[y][x+block->upperx];
+      //printf("%u",img[y][x]);
     }
-    printf("\n");
-    printf("ext(%lu) = %u\n",x,ext[x]);
+    //printf("\n");
+    //printf("ext(%lu) = %u\n",x,ext[x]);
   }
 }
-///////////////////////////a tester/////////////////////////////////////////
+
 
 /**
  * 
