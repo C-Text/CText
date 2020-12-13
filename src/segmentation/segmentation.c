@@ -244,8 +244,8 @@ int main()
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {1,1,1,1,1,0,0,0,1,1,1,1,1,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -408,8 +408,10 @@ void word_seg(Block* block,
     size_t height = block->lowery - block->uppery +1;
     int space_finder;
     int nbspace;
+
     while (x < histolen) 
     {
+        printf("x=%lu",x);
         if (ver_histo[x] != 0) 
         {
             sousblock->upperx = x+block->upperx;
@@ -417,24 +419,34 @@ void word_seg(Block* block,
             nbspace = 0;
             while ((space_finder) && (x < histolen)) 
             {
+                printf(" x'=%lu\n",x);
                 if (ver_histo[x] == 0) 
                 {
                     nbspace += 1;
                     if (height/nbspace < 4) 
                     {
                         space_finder = 0;
-                        sousblock->lowerx = x - nbspace;
+                        sousblock->lowerx =block->upperx + x - nbspace;
                         /*
-
                         ext = concat(ext,link,sousblock->M);
                         */
-                        //printf("%lu,%lu",left,right);
                         /////////////////////////////////////////
                         printB(sousblock,size,img);
                         /////////////////////////////////////////
                     }
                 }
                 x += 1;
+            }
+            if(x==histolen)
+            {
+                sousblock->lowerx = block->lowerx;
+                /*
+                ext = concat(ext,link,sousblock->M);
+                */
+                /////////////////////////////////////////
+                printf("finalblock");
+                printB(sousblock,size,img);
+                /////////////////////////////////////////
             }
         }
         else 
