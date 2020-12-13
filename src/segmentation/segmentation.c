@@ -101,7 +101,7 @@ BiBlock* newbiblock(Block* upper,Block* lower)
  * also initialised to NULL.
  * @author matthieu
  */
-struct Node* newNode() 
+Node* newNode() 
 { 
     // Allocate memory for new node  
     struct Node* node = (struct Node*)malloc(sizeof(struct Node)); 
@@ -117,8 +117,16 @@ struct Node* newNode()
 BiBlock* Xcut(Block* block,Coords* size,unsigned char M[size->x][size->y]);
 BiBlock* Ycut(Block* block,Coords* size,unsigned char M[size->x][size->y]);
 
-Node* __buildtreeX(Node* tree, Coords* size,unsigned char M[size->x][size->y]);
-Node* __buildtreeY(Node* tree, Coords* size,unsigned char M[size->x][size->y]);
+Node* __buildtreeX(Node* tree,
+                   Coords* size,
+                   unsigned char M[size->x][size->y],
+                   Coords* Osize,
+                   unsigned char opti[Osize->x][Osize->y]);
+Node* __buildtreeY(Node* tree,
+                   Coords* size,
+                   unsigned char M[size->x][size->y],
+                   Coords* Osize,
+                   unsigned char opti[Osize->x][Osize->y]);
 
 void printB(Block* block,Coords* coords, unsigned char M[coords->x][coords->y]);
 
@@ -127,9 +135,10 @@ void printM(Coords* coords,
 int isblack(size_t x, size_t y ,
             Coords* coords,
             unsigned char M[coords->x][coords->y]);
-Coords* optiM(Coords* Msize,
+void optiM(Coords* Msize,
+            Coords* Osize,
             unsigned char M[Msize->y][Msize->x],
-            unsigned char opti[Msize->y/12+1][Msize->x/12+1]);
+            unsigned char opti[Osize->y][Osize->x]);
 
 Node* seg(Coords* size,unsigned char M[size->x][size->y]);
 
@@ -310,8 +319,6 @@ void hori_histo(unsigned int ext[],
     //printf("\n");
   }
 }
-
-
 
 
 /**
@@ -638,7 +645,7 @@ void letter_seg(Block* block,
     //printf("%s\n",ext);
     block->M = ext;
 }
-///////////////////////////////////////////////////////////////////////////////////
+
 
 
 void printM(Coords* size, unsigned char M[size->x][size->y])
@@ -655,6 +662,7 @@ void printM(Coords* size, unsigned char M[size->x][size->y])
     }
 }
 
+
 void printB(Block* block,Coords* size, unsigned char M[size->x][size->y])
 {
     size_t x,y;
@@ -670,6 +678,7 @@ void printB(Block* block,Coords* size, unsigned char M[size->x][size->y])
     }
 }
 
+
 void printcoords(Block* block)
 {
     printf("upper: x=%lu y=%lu\n",block->upperx,block->uppery);
@@ -677,28 +686,25 @@ void printcoords(Block* block)
 }
 
 
-
-Coords* optiM(Coords* Msize,
-          unsigned char M[Msize->y][Msize->x],
-          unsigned char opti[Msize->y/12+1][Msize->x/12+1])
+void optiM(Coords* Msize,
+            Coords* Osize,
+            unsigned char M[Msize->y][Msize->x],
+            unsigned char opti[Osize->y][Osize->x])
 {
-    Coords* OPMsize = newcoords();
-    OPMsize->x = Msize->x/12+1;
-    OPMsize->y = Msize->y/12+1;
     size_t i,j;
     size_t ibis,jbis;
-    for (j=0; j<OPMsize->y; j++)
+    for (j=0; j<Osize->y; j++)
     {
-        for(i=0; i<OPMsize->x; i++)
+        for(i=0; i<Osize->x; i++)
         {
             opti[j][i]=0;
         }
     }
 
 
-    for (j=0; j<OPMsize->y; j++)
+    for (j=0; j<Osize->y; j++)
     {
-        for(i=0; i<OPMsize->x; i++)
+        for(i=0; i<Osize->x; i++)
         {
             if(isblack(i*12,j*12,Msize,M)==1)
             {
@@ -726,7 +732,7 @@ Coords* optiM(Coords* Msize,
                     //printf("entrer en boucle");
                     while(ibis<=i+1)
                     {
-                        if((jbis<OPMsize->y)&&(ibis<OPMsize->x))
+                        if((jbis<Osize->y)&&(ibis<Osize->x))
                         {
                             opti[jbis][ibis]=1;
                         }
@@ -738,8 +744,8 @@ Coords* optiM(Coords* Msize,
             }
         }
     }
-    return OPMsize;
 }
+
 
 int isblack(size_t x, size_t y ,
             Coords* coords,
@@ -772,6 +778,7 @@ int isblack(size_t x, size_t y ,
 
     return ext;
 }
+
 
 BiBlock* Xcut(Block* block,Coords* size,unsigned char M[size->x][size->y])
 {
@@ -879,36 +886,42 @@ BiBlock* Ycut(Block* block,Coords* size,unsigned char M[size->x][size->y])
 }
 
 
-Node* __buildtreeX(Node* tree, Coords* size,unsigned char M[size->x][size->y])
+Node* __buildtreeX(Node* tree,
+                   Coords* size,
+                   unsigned char M[size->x][size->y],
+                   Coords* Osize,
+                   unsigned char opti[Osize->x][Osize->y])
 {
     
-    BiBlock* children = Xcut(tree->block,size,M);
+    BiBlock* children = Xcut(tree->block,Osize,opti);
     if(children->lower!=NULL)
     {
         tree->left = newNode();
         tree->right = newNode();
         tree->left->block = children->upper;
         tree->right->block = children->lower;
-        tree->left = __buildtreeY(tree->left,size,M);
-        tree->right = __buildtreeY(tree->right,size,M);
+        tree->left = __buildtreeY(tree->left,size,M,Osize,opti);
+        tree->right = __buildtreeY(tree->right,size,M,Osize,opti);
         return tree;
     }
     else
     {
         tree->block =children->upper;
-        children = Ycut(tree->block,size,M);
+        children = Ycut(tree->block,Osize,opti);
         if (children->lower!=NULL)
         {
             tree->left = newNode();
             tree->right = newNode();
             tree->left->block = children->upper;
             tree->right->block = children->lower;
-            tree->left = __buildtreeX(tree->left,size,M);
-            tree->right = __buildtreeX(tree->right,size,M);
+            tree->left = __buildtreeX(tree->left,size,M,Osize,opti);
+            tree->right = __buildtreeX(tree->right,size,M,Osize,opti);
         }
         else
         {
             tree->block =children->upper;
+            tree->block = newblock(tree->block->upperx*12,tree->block->uppery*12,
+            tree->block->lowerx*12,tree->block->lowery*12);
             line_seg(tree->block,size,M);
         }
         
@@ -924,35 +937,42 @@ Node* __buildtreeX(Node* tree, Coords* size,unsigned char M[size->x][size->y])
     
 }
 
-Node* __buildtreeY(Node* tree, Coords* size,unsigned char M[size->x][size->y])
+
+Node* __buildtreeY(Node* tree,
+                   Coords* size,
+                   unsigned char M[size->x][size->y],
+                   Coords* Osize,
+                   unsigned char opti[Osize->x][Osize->y])
 {
-    BiBlock* children = Ycut(tree->block,size,M);
+    BiBlock* children = Ycut(tree->block,Osize,opti);
     if(children->lower!=NULL)
     {
         tree->left = newNode();
         tree->right = newNode();
         tree->left->block = children->upper;
         tree->right->block = children->lower;
-        tree->left = __buildtreeX(tree->left,size,M);
-        tree->right = __buildtreeX(tree->right,size,M);
+        tree->left = __buildtreeX(tree->left,size,M,Osize,opti);
+        tree->right = __buildtreeX(tree->right,size,M,Osize,opti);
         return tree;
     }
     else
     {
         tree->block =children->upper;
-        children = Xcut(tree->block,size,M);
+        children = Xcut(tree->block,Osize,opti);
         if (children->lower!=NULL)
         {
             tree->left = newNode();
             tree->right = newNode();
             tree->left->block = children->upper;
             tree->right->block = children->lower;
-            tree->left = __buildtreeY(tree->left,size,M);
-            tree->right = __buildtreeY(tree->right,size,M);
+            tree->left = __buildtreeY(tree->left,size,M,Osize,opti);
+            tree->right = __buildtreeY(tree->right,size,M,Osize,opti);
         }
         else
         {
             tree->block =children->upper;
+            tree->block = newblock(tree->block->upperx*12,tree->block->uppery*12,
+            tree->block->lowerx*12,tree->block->lowery*12);
             line_seg(tree->block,size,M);
         }
         ///////////////////////////////////////////////
@@ -970,8 +990,28 @@ Node* __buildtreeY(Node* tree, Coords* size,unsigned char M[size->x][size->y])
 Node* seg(Coords* size,unsigned char M[size->x][size->y])
 {
     Node* root = newNode();
-    root->block = newblock(0,0,size->x-1,size->y-1);
-    root = __buildtreeX(root,size,M);
+    Coords* Osize = newcoords();
+    if (size->x%12==0)
+    {
+        Osize->x = size->x/12;
+    }
+    else
+    {
+        Osize->x = size->x/12 +1;
+    }
+    if (size->y%12==0)
+    {
+        Osize->y = size->y/12;
+    }
+    else
+    {
+        Osize->y = size->y/12 +1;
+    }
+    unsigned char opti[Osize->x][Osize->y];
+    optiM(size,Osize,M,opti);
+
+    root->block = newblock(0,0,Osize->x-1,Osize->y-1);
+    root = __buildtreeX(root,size,M,Osize,opti);
     //printB(root->block,size,M);
     return root;
 }
