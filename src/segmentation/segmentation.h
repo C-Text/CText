@@ -8,6 +8,7 @@ void printB(Block* block,
 void printM(Coords* coords,
             unsigned char M[coords->x][coords->y]);
 Node* seg(Coords* size,unsigned char M[size->x][size->y]);
+void freetree(Node* tree);
 void hori_histo(unsigned int ext[],
                 Block* block,
                 size_t histolen,

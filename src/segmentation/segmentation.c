@@ -36,6 +36,7 @@ typedef struct Node
 
 char* concat(char *str1,char *link ,char *str2);
 char* concat2(char *str1,char *str2);
+void freetree(Node* tree);
 
 /**
  * 
@@ -1066,4 +1067,22 @@ char* concat2(char *str1,char *str2)
     }
     *p = 0;
     return str;
+}
+
+void freetree(Node* tree)
+{
+    if(tree->left!=NULL)
+    {
+        freetree(tree->left);
+    }
+    if(tree->right!=NULL)
+    {
+        freetree(tree->right);
+    }
+    if(tree->block->M!=NULL)
+    {
+        free(tree->block->M);
+    }
+    free(tree->block);
+    free(tree);
 }
