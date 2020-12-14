@@ -14,8 +14,10 @@
 int getAngle(int matrix[], int w, int h)
 {
 	int angle = 0;
+    double H = (double)h;
+    double I, J, T, P;
 
-	double R = sqrt(180*180+h*h);
+    double R = sqrt(180*180+h*h);
 	int r = (int)R;
 
 	double *stockMat = calloc(180*R, sizeof(double));
@@ -26,24 +28,30 @@ int getAngle(int matrix[], int w, int h)
 		{
 			if(matrix[j*w+i] == 0)
 			{
-				for(int t=0; t<=180; t++)  //course through all the possible thetas
+                I = (double)i;
+                J = (double)j;
+
+                for(int t=0; t<=180; t++)  //course through all the possible thetas
 				{
-					double I = (double)i;
-					double J = (double)j;
-					double T = (double)t;
-					double H = (double)h;
+                    T = (double)t;
 
-					double dT = M_PI/180 ;
+					//double dT = M_PI/180;
 
-					double P = I*cos(T*dT) + (H-J)*sin(T*dT);
+					P = J*cos(T) + I*sin(T);
 
 					int p = (int)P;
-					if(p>0)
-					    stockMat[p*180+t]++; //segfault
+					p = p + (r/2);
+
+
+					stockMat[p*180+t]++;
 				}
 			}
 		}
 	}
+
+
+	int mem=0;
+	int mem2=0;
 
 	for(int k=0; k<180; k++)  //course through stockMat
 	{
@@ -51,21 +59,21 @@ int getAngle(int matrix[], int w, int h)
 		{
 			if(angle < stockMat[l * 180 + k])
             {
-                angle = k;
+                angle = stockMat[l * 180 + k];
+                mem= k;
+                mem2 = l;
             }
+			printf("%lf, ", stockMat[l * 180 + k]);
 		}
+		printf("\n");
 	}
+	printf("k= %i, l= %i\n", mem, mem2-r/2);
+	printf("content = %lf\n",stockMat[mem2 * 180 + mem]);
 
-    for(int v = 0; v < 180; v++)
-    {
-        for(int b = 0; b < R; b++)
-        {
-            printf("%i,", stockMat[b*180+v]);
-        }
-        printf("\n");
-    }
-
-	return angle;
+	free(stockMat);
+	if(mem <= 90)
+	    return mem;
+	return 180-mem;
 }
 
 
