@@ -385,7 +385,11 @@ void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
         }
         y += 1;
     }
+    ext = concat(ext,link,link);
     block->M = ext;
+    free(sousblock->M);
+    free(sousblock);
+
 
     /*
     for(size_t i =0; i< histolen; i++)
@@ -515,6 +519,9 @@ void word_seg(Block* block,
         }
     }
     block->M = ext;
+    free(sousblock->M);
+    free(sousblock);
+
 
     /*
     for(size_t i =0; i< histolen; i++)
@@ -610,7 +617,7 @@ void letter_seg(Block* block,
     block->lowerx,block->lowery);
 
     size_t x = 0;
-    size_t height = block->lowery - block->uppery +1;
+    //size_t height = block->lowery - block->uppery +1;
     size_t length = block->lowerx - block->upperx + 1;
     //printf("lenght = %lu\n",length);
     while (x < length)
@@ -644,6 +651,8 @@ void letter_seg(Block* block,
     }
     //printf("%s\n",ext);
     block->M = ext;
+    free(sousblock->M);
+    free(sousblock);
 }
 
 
