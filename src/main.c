@@ -1,5 +1,6 @@
 #include "libs/neural_network/train.h"
 #include "libs/application/application.h"
+#include "libs/string/string.h"
 
 int main(int argc, char **argv) {
   if (argc == 1) {
@@ -7,7 +8,7 @@ int main(int argc, char **argv) {
     return launch_application(argc, argv);
   }
   // ctext -t : train the network
-  if (argc == 2 && argv[1][0] == '-' && argv[1][1] == 't') {
+  if (argc == 2 && equals(argv[1], "-t")) {
     training();
     return 0;
   }

@@ -47,7 +47,10 @@ add_executable(
         src/libs/application/application.h
         src/libs/application/app.h
         src/libs/neural_network/train.c
-        src/libs/neural_network/train.h)
+        src/libs/neural_network/train.h
+        src/libs/string/string.c
+        src/libs/string/string.h
+)
 
 target_link_libraries(CText m ${SDL_LIBRARY} ${SDL_IMAGE_LIBRARIES} ${GTK3_LIBRARIES})
 
