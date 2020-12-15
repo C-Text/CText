@@ -5,6 +5,6 @@
 
 int getAngle(int matrix[], int w, int h);
 
-void rotation(double angle, int matrix[], int w, int h);
+void rotation(int angle, int matrix[], int w, int h);
 
 #endif

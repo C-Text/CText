@@ -14,11 +14,10 @@
 int getAngle(int matrix[], int w, int h)
 {
 	int angle = 0;
-    double H = (double)h;
     double I, J, T, P;
-
     double R = sqrt(180*180+h*h);
 	int r = (int)R;
+    int mem=0;
 
 	double *stockMat = calloc(180*R, sizeof(double));
 
@@ -34,46 +33,30 @@ int getAngle(int matrix[], int w, int h)
                 for(int t=0; t<=180; t++)  //course through all the possible thetas
 				{
                     T = (double)t;
-
-					//double dT = M_PI/180;
-
 					P = J*cos(T) + I*sin(T);
-
 					int p = (int)P;
 					p = p + (r/2);
-
-
 					stockMat[p*180+t]++;
 				}
 			}
 		}
 	}
 
-
-	int mem=0;
-	int mem2=0;
-
 	for(int k=0; k<180; k++)  //course through stockMat
 	{
 		for(int l = 0; l<r; l++)
 		{
-			if(angle < stockMat[l * 180 + k])
+			if(mem < stockMat[l * 180 + k])
             {
-                angle = stockMat[l * 180 + k];
-                mem= k;
-                mem2 = l;
+                mem = stockMat[l * 180 + k];
+                angle= k;
             }
-			printf("%lf, ", stockMat[l * 180 + k]);
 		}
-		printf("\n");
 	}
-	printf("k= %i, l= %i\n", mem, mem2-r/2);
-	printf("content = %lf\n",stockMat[mem2 * 180 + mem]);
-
 	free(stockMat);
-	if(mem <= 90)
-	    return mem;
-	return 180-mem;
+	if(angle <= 90)
+	    return angle;
+	return 180-angle;
 }
 
 
@@ -85,26 +68,28 @@ int getAngle(int matrix[], int w, int h)
 */
 
 //rotates the image according to the angle 'angle'
-void rotation(double angle, int matrix[], int w, int h)
+void rotation(int angle, int matrix[], int w, int h)
 {
+    double A = (double)angle;
+    double I, J;
 	int *resMat = calloc(h*w, sizeof(int));  
 
 	for(int i=0; i< w; i++)
 	{
 		for(int j =0; j< h; j++)
 		{
-			double I = (double)I;
-			double J = (double)J;
+			I = (double)i;
+			J = (double)j;
 			
 			//new coordinates of the current pixel
-			double X = I*cos(angle) + J*sin(angle);
-			double Y = (-1)*I*sin(angle) + J*cos(angle);
+			double X = I*cos(A) - J*sin(A);
+			double Y = I*sin(A) + J*cos(A);
 			
 			int x = (int)X;
 			int y = (int)Y;
 
 			//replace pixel values
-			resMat[x*w+y] = matrix[i*w+j];
+			resMat[y*w+x] = matrix[j*w+i];
 		}
 	}
 
