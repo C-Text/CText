@@ -14,9 +14,8 @@
 /**
   *Convert colored image into grayscale image.
   *
-  *@param image_surface is the image to convert into grayscale.
+  *@param pixbuf is the image to convert into grayscale.
   */
-void grayscale(SDL_Surface *image_surface);
 
 void gtk_grayscale(GdkPixbuf *pixbuf);
 

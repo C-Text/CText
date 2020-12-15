@@ -1,6 +1,6 @@
 /**
   *Authors: Lise Giraud and Valentin Chassignol
-  *Date: 24/10/2020
+  *Date: 14/12/2020
   *File's name: otsu.h
   */
 
@@ -63,6 +63,12 @@ int otsu(unsigned int histo[256], unsigned w,unsigned h);
  */
 void binarization(unsigned int w, unsigned int h, char binarization[w][h],
                   int final_t, SDL_Surface *image_surface);
+
+/**
+ * Convert the given image into binary image using the functions below.
+ *
+ * @param pixbuf is the given image to convert into a binary image.
+ */
 
 void gtk_otsu_binarization(GdkPixbuf *pixbuf);
 

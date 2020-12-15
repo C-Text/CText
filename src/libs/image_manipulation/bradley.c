@@ -1,3 +1,10 @@
+/*
+ *Author: Lise Giraud
+ * Date : 14/12/2020
+ * File's name: bradley.c
+ */
+
+
 #include <stdlib.h>
 #include "bradley.h"
 #include "pixel_operations.h"

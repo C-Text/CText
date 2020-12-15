@@ -1,6 +1,6 @@
 /**
   * Author: Lise Giraud and Valentin Chassignol
-  * Date: 24/10/2020
+  * Date: 14/12/2020
   * File's name : otsu.c
   */
 
