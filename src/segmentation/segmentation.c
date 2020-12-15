@@ -269,7 +269,8 @@ int main()
     Block* test = newblock(0,0,matsize->x-1,matsize->y-1);
     */
     //seg(matsize,image);
-
+    
+    
     /*
     char i = 14/12+1;
     unsigned char opi[i][i];
@@ -932,6 +933,7 @@ Node* __buildtreeX(Node* tree,
             tree->block =children->upper;
             tree->block = newblock(tree->block->upperx*12,tree->block->uppery*12,
             tree->block->lowerx*12,tree->block->lowery*12);
+
             line_seg(tree->block,size,M);
         }
         
@@ -999,6 +1001,7 @@ Node* __buildtreeY(Node* tree,
 
 Node* seg(Coords* size,unsigned char M[size->x][size->y])
 {
+    remove("data/tmp/out.txt");
     Node* root = newNode();
     Coords* Osize = newcoords();
     if (size->x%12==0)
@@ -1032,7 +1035,7 @@ char* concat(char *str1,char *link ,char *str2)
     char *str = malloc(size * sizeof(char));
     if(str == NULL)
     {
-        errx(1,"Mot enough memory!");
+        errx(1,"not enough memory!");
     }
     char *p = str;
     while(*str1!=0)
@@ -1054,7 +1057,7 @@ char* concat2(char *str1,char *str2)
     char *str = malloc(size * sizeof(char));
     if(str == NULL)
     {
-        errx(1,"Mot enough memory!");
+        errx(1,"not enough memory!");
     }
     char *p = str;
     while(*str1!=0)
@@ -1085,4 +1088,17 @@ void freetree(Node* tree)
     }
     free(tree->block);
     free(tree);
+}
+
+
+void fileout(char *str)
+{
+    FILE *fp;
+    fp = fopen("data/tmp/out.txt","a+");
+    if(fp==NULL)
+    {
+        errx(1,"unable to access file or it doesn't exist");
+    }
+    fputs(str,fp);
+    fclose(fp);
 }
