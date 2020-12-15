@@ -31,10 +31,17 @@ add_executable(
         src/main.c
         src/libs/list/list.c
         src/libs/list/list.h
+        src/libs/string/string.c
+        src/libs/string/string.h
+        src/libs/application/application.c
+        src/libs/application/application.h
+        src/libs/application/app.h
         src/libs/neural_network/neuralnetwork.c
         src/libs/neural_network/neuralnetwork.h
         src/libs/neural_network/neuron.c
         src/libs/neural_network/neuron.h
+        src/libs/neural_network/train.c
+        src/libs/neural_network/train.h
         src/libs/image_manipulation/pixel_operations.c
         src/libs/image_manipulation/pixel_operations.h
         src/libs/image_manipulation/otsu.c
@@ -43,14 +50,12 @@ add_executable(
         src/libs/image_manipulation/grayscale.h
         src/libs/image_manipulation/segmentation.c
         src/libs/image_manipulation/segmentation.h
-        src/libs/application/application.c
-        src/libs/application/application.h
-        src/libs/application/app.h
-        src/libs/neural_network/train.c
-        src/libs/neural_network/train.h
-        src/libs/string/string.c
-        src/libs/string/string.h
-        src/libs/image_manipulation/bradley.c src/libs/image_manipulation/bradley.h)
+        src/libs/image_manipulation/bradley.c
+        src/libs/image_manipulation/bradley.h
+        src/libs/image_manipulation/filter.c
+        src/libs/image_manipulation/filter.h
+        src/libs/image_manipulation/rotation.c
+        src/libs/image_manipulation/rotation.h)
 
 target_link_libraries(CText m ${SDL_LIBRARY} ${SDL_IMAGE_LIBRARIES} ${GTK3_LIBRARIES})
 

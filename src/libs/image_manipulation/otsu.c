@@ -40,12 +40,6 @@ int sum(unsigned int *histo, int start, int end) {
 
 void histo(unsigned int histo[256], GdkPixbuf *pixbuf) {
   int n_channels = gdk_pixbuf_get_n_channels (pixbuf);
-
-  g_assert (gdk_pixbuf_get_colorspace (pixbuf) == GDK_COLORSPACE_RGB);
-  g_assert (gdk_pixbuf_get_bits_per_sample (pixbuf) == 8);
-  g_assert (gdk_pixbuf_get_has_alpha (pixbuf));
-  g_assert (n_channels == 4);
-
   int w = gdk_pixbuf_get_width (pixbuf);
   int h = gdk_pixbuf_get_height (pixbuf);
   int rowstride = gdk_pixbuf_get_rowstride (pixbuf);
