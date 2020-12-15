@@ -1,16 +1,13 @@
-#include "pixel_operations.h"
 #include "SDL/SDL.h"
-#include "SDL/SDL_image.h"
 
 
-/*
- * matrix: the image matrix
- * max: the width of the median filter
- * w: the width of the matrix
- * h: the height of the matrix
-*/
-
-//applies a median filter to the whole image
+/**
+ * Applies a median filter to the whole image matrix
+ * @param matrix: The image matrix
+ * @param max: The width of the median filter applied
+ * @param w: The width of the matrix
+ * @param h: The height od the matrix
+ */
 void medianFilterMatrix(int matrix[], int max, int w, int h)
 {
 	int* tmp = matrix;

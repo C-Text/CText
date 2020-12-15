@@ -1,14 +1,13 @@
 #include "pixel_operations.h"
 #include "SDL/SDL.h"
-#include "SDL/SDL_image.h"
 
-/*
- * convolMat: convolution matrix we want to apply
- * max: width of the convolution matrix
- * image_surface: the loaded image
-*/
 
-//applies convolution to the whole image.
+/**
+ * Applies a convolution matrix to the whole image
+ * @param convolMat: convolution matrix we want to apply
+ * @param max: width of the convolution matrix
+ * @param image_surface: the loaded image
+ */
 void applyConvol(int convolMat[], int max, SDL_Surface *image_surface)
 {
 	int w = image_surface->w;  //get image width and height
@@ -29,7 +28,6 @@ void applyConvol(int convolMat[], int max, SDL_Surface *image_surface)
 			int iB = (int)B;
 
 			for(int i = -(max/2); i<=(max/2); i++)  //courses current pixels and neighbours
-
 			{
 				for(int j = -(max/2); j<=(max/2); j++)
 				{
@@ -55,8 +53,6 @@ void applyConvol(int convolMat[], int max, SDL_Surface *image_surface)
 			}
 
 			//replace the old pixel value by the fresh one
-
-	
 			iR = iR/(max*max)*2;
 			iG = iG/(max*max)*2;
 			iB = iB/(max*max)*2;
@@ -80,8 +76,6 @@ void applyConvol(int convolMat[], int max, SDL_Surface *image_surface)
 			G = (Uint8)iG;
 			B = (Uint8)iB;
 
-			printf("R =%i, G =%i, B=%i\n",R,G,B);
-			
 			pi = SDL_MapRGB(image_surface->format, R, G, B);
 
 			put_pixel(image_surface, x, y, pi);
@@ -90,12 +84,12 @@ void applyConvol(int convolMat[], int max, SDL_Surface *image_surface)
 }
 
 
-/*
- * image_surface: the loaded image
- * max: the width of the median filter
-*/
-
-//applies a median filter to the whole image
+/**
+ * Applies a median filter to the whole image
+ * @param image_surface: the loaded image
+ * @param max: the width of the median filter
+ * @return the new image_surface
+ */
 SDL_Surface medianFilter(SDL_Surface *image_surface, int max)
 {
 	int w = image_surface->w;  //get image width and height
