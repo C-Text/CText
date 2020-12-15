@@ -86,6 +86,6 @@ learning_rate);
  *
  * @return an array containing the result of each output neurons
  */
-double *predict(NeuralNetwork *network, double *input);
+size_t predict(NeuralNetwork *network, double input[]);
 
 #endif //CTEXT_NEURALNETWORK_H

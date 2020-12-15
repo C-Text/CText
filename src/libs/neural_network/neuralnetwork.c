@@ -387,13 +387,23 @@ void load_neural_network(NeuralNetwork *net, const char *filename) {
   fclose(file);
 }
 
-double *predict(NeuralNetwork *network, double *input) {
-  propagation(network, input);
-  List output_layer = network->layers->last->value;
-  double *results = malloc(sizeof(double) * output_layer->length);
-  for (Node *node = output_layer->first; node != NULL; node = node->next) {
-    *(results++) = ((Neuron *) node->value)->value;
-  }
+size_t predict(NeuralNetwork *network, double entry[]) {
+  // Propagate the info with current letter
+  propagation(network, entry);
+  double max_proba = 0;
+  Node *output_neurons = ((List) (network->layers->last->value))->first;
+  Neuron *n;
 
-  return results;
+  // Find th index of the max probability of the output
+  size_t i_index = 0;
+  for (unsigned long i = 0; i < ((List) (network->layers->last->value))->length;
+       i++) {
+    n = (Neuron *) (output_neurons->value);
+    if (max_proba < n->value) {
+      max_proba = n->value;
+      i_index = i;
+    }
+    output_neurons = output_neurons->next;
+  }
+  return i_index;
 }

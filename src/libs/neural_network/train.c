@@ -42,27 +42,6 @@ double *get_matrix(SDL_Surface *image_surface) {
   return array;
 }
 
-size_t run(NeuralNetwork *network, double entry[]) {
-  // Propagate the info with current letter
-  propagation(network, entry);
-  double max_proba = 0;
-  Node *output_neurons = ((List) (network->layers->last->value))->first;
-  Neuron *n;
-
-  // Find th index of the max probability of the output
-  size_t i_index = 0;
-  for (unsigned long i = 0; i < ((List) (network->layers->last->value))->length;
-       i++) {
-    n = (Neuron *) (output_neurons->value);
-    if (max_proba < n->value) {
-      max_proba = n->value;
-      i_index = i;
-    }
-    output_neurons = output_neurons->next;
-  }
-  return i_index;
-}
-
 void training() {
   // Save all images into an array
   double **models = malloc(sizeof(char *) * 74);
@@ -102,7 +81,7 @@ void training() {
     }
   }
   for (int c = 0; c < 74; c++) {
-    printf("%c -> %c\n", result_elements[c], result_elements[run(&network,
+    printf("%c -> %c\n", result_elements[c], result_elements[predict(&network,
                                                                  models[c])]);
   }
 }
