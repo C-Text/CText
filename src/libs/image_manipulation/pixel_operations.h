@@ -58,6 +58,16 @@ void init_sdl();
  */
 SDL_Surface *load_image(char *path);
 
+/**
+ * Put pixel function implemented for GdkPixBuf
+ * @param pixbuf
+ * @param x
+ * @param y
+ * @param red
+ * @param green
+ * @param blue
+ * @param alpha
+ */
 void
 gtk_put_pixel (GdkPixbuf *pixbuf, int x, int y, guchar red, guchar green, guchar
 blue, guchar alpha);

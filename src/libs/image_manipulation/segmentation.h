@@ -1,14 +1,88 @@
 #ifndef SEGMENTATION_H
 #define SEGMENTATION_H
+
 #include <stdlib.h>
+#include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
+
+
+typedef struct Block
+{
+  size_t upperx;
+  size_t uppery;
+  size_t lowerx;
+  size_t lowery;
+  char* M;
+}Block;
+
+typedef struct BiBlock
+{
+  Block* upper;
+  Block* lower;
+}BiBlock;
+
+typedef struct Coords
+{
+  size_t x;
+  size_t y;
+}Coords;
+
+typedef struct Node
+{
+
+  Block* block;
+
+  struct Node* left;
+  struct Node* right;
+}Node;
+
+Node *seg(Coords *size, unsigned char M[size->x][size->y]);
+
+    char* concat(char *str1,char *link ,char *str2);
+char* concat2(char *str1,char *str2);
+void freetree(Node* tree);
+void fileout(char *str);
 
 void printB(Block* block,
             Coords* coords,
             unsigned char M[coords->x][coords->y]);
 void printM(Coords* coords,
             unsigned char M[coords->x][coords->y]);
-Node* seg(Coords* size,unsigned char M[size->x][size->y]);
-void freetree(Node* tree);
+BiBlock* Xcut(Block* block,Coords* size,unsigned char M[size->x][size->y]);
+BiBlock* Ycut(Block* block,Coords* size,unsigned char M[size->x][size->y]);
+
+Node* __buildtreeX(Node* tree,
+                   Coords* size,
+                   unsigned char M[size->x][size->y],
+                   Coords* Osize,
+                   unsigned char opti[Osize->x][Osize->y]);
+Node* __buildtreeY(Node* tree,
+                   Coords* size,
+                   unsigned char M[size->x][size->y],
+                   Coords* Osize,
+                   unsigned char opti[Osize->x][Osize->y]);
+
+void printB(Block* block,Coords* coords, unsigned char M[coords->x][coords->y]);
+
+void printM(Coords* coords,
+            unsigned char M[coords->x][coords->y]);
+int isblack(size_t x, size_t y ,
+            Coords* coords,
+            unsigned char M[coords->x][coords->y]);
+void optiM(Coords* Msize,
+           Coords* Osize,
+           unsigned char M[Msize->y][Msize->x],
+           unsigned char opti[Osize->y][Osize->x]);
+
+
+void printcoords(Block* block);
+
+void block_to_mat(Block* block,
+                  Coords* size,
+                  unsigned char M[size->x][size->y],
+                  Coords* sizeMat,
+                  unsigned char Mat[sizeMat->x][sizeMat->y]);
+
 void hori_histo(unsigned int ext[],
                 Block* block,
                 size_t histolen,

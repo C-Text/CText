@@ -3,6 +3,8 @@
 #include "../image_manipulation/grayscale.h"
 #include "../image_manipulation/otsu.h"
 #include "../image_manipulation/bradley.h"
+#include "../image_manipulation/segmentation.h"
+#include "../image_manipulation/pixel_operations.h"
 
 #define W_MAIN_ID     "org.ctext.main_window"
 #define W_DIALG_ID    "org.ctext.file_chooser"
@@ -61,8 +63,24 @@ void on_file_selected(__attribute__ ((unused))GtkButton *button,
 
 void on_next(__attribute__ ((unused))GtkButton *button,
              app_widgets *widgets) {
-
+  g_print("Ploppp");
   gtk_widget_set_sensitive(GTK_WIDGET(widgets->btn_next), FALSE);
+  // Send to segmentation
+  int w = gdk_pixbuf_get_width(widgets->pix_buf);
+  int h = gdk_pixbuf_get_height(widgets->pix_buf);
+  int n_channels = gdk_pixbuf_get_n_channels (widgets->pix_buf);
+  int rowstride = gdk_pixbuf_get_rowstride (widgets->pix_buf);
+  guchar *pixels = gdk_pixbuf_get_pixels (widgets->pix_buf);
+  Coords size = {w,h};
+  unsigned char arr[size.x][size.y];
+
+    for (int j = 0; j < h; ++j) {
+      for (int i = 0; i < w; ++i) {
+      guchar *p = pixels + j * rowstride + i * n_channels;
+      arr[i][j] = p[0] == 255 ? 0 : 1;
+    }
+  }
+  seg(&size, arr);
   widgets->step += 1;
 }
 
@@ -89,7 +107,6 @@ void bradlay_param_changed(__attribute__ ((unused))GtkSpinButton *spin_button,
   widgets->pix_buf = gdk_pixbuf_copy(widgets->raw_buf);
   int t = gtk_spin_button_get_value_as_int(widgets->btn_t);
   int s = gtk_spin_button_get_value_as_int(widgets->btn_s);
-  g_print("t: %u, s: %u\n", t, s);
   gtk_bradley(t, s, widgets->pix_buf);
   resize_image(GTK_WIDGET(widgets->layout_img), NULL, widgets);
 }

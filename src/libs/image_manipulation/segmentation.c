@@ -3,55 +3,20 @@
 #include <time.h>
 #include <string.h>
 #include <err.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>
-
-typedef struct Block
-{
-    size_t upperx;
-    size_t uppery;
-    size_t lowerx;
-    size_t lowery;
-    char* M;
-}Block;
-
-typedef struct BiBlock
-{
-    Block* upper;
-    Block* lower;
-}BiBlock;
-
-typedef struct Coords
-{
-    size_t x;
-    size_t y;
-}Coords;
-
-typedef struct Node
-{
-    
-    Block* block;
-
-    struct Node* left;
-    struct Node* right;
-}Node;
-
-char* concat(char *str1,char *link ,char *str2);
-char* concat2(char *str1,char *str2);
-void freetree(Node* tree);
-void fileout(char *str);
+#include "segmentation.h"
+#include "pixel_operations.h"
 
 /**
  * 
  * initialize a new coords structure to modify later
  * @author matthieu
  */
-Coords* newcoords()
-{
-    Coords* coords = (Coords*)malloc(sizeof(struct Coords));
+Coords *newcoords() {
+  Coords *coords = (Coords *) malloc(sizeof(struct Coords));
 
-    coords->x = 0;
-    coords->y = 0; 
-    return coords;
+  coords->x = 0;
+  coords->y = 0;
+  return coords;
 }
 
 /**
@@ -66,17 +31,16 @@ Coords* newcoords()
  * @return the pointer to the newly created block
  * 
  */
-Block* newblock(size_t upperx,size_t uppery,size_t lowerx,size_t lowery)
-{
-    Block* block = (Block*)malloc(sizeof(struct Block));
+Block *newblock(size_t upperx, size_t uppery, size_t lowerx, size_t lowery) {
+  Block *block = (Block *) malloc(sizeof(struct Block));
 
-    block->upperx = upperx;
-    block->uppery = uppery; 
-    block->lowerx = lowerx;
-    block->lowery = lowery;
-    block->M = NULL;
+  block->upperx = upperx;
+  block->uppery = uppery;
+  block->lowerx = lowerx;
+  block->lowery = lowery;
+  block->M = "";
 
-    return block;
+  return block;
 }
 
 /**
@@ -88,12 +52,11 @@ Block* newblock(size_t upperx,size_t uppery,size_t lowerx,size_t lowery)
  * @return the pointer to the newly created biblock
  * 
  */
-BiBlock* newbiblock(Block* upper,Block* lower)
-{
-    BiBlock* biblock = (BiBlock*)malloc(sizeof(struct BiBlock));
-    biblock->upper = upper;
-    biblock->lower = lower;
-    return biblock;
+BiBlock *newbiblock(Block *upper, Block *lower) {
+  BiBlock *biblock = (BiBlock *) malloc(sizeof(struct BiBlock));
+  biblock->upper = upper;
+  biblock->lower = lower;
+  return biblock;
 }
 
 /**
@@ -104,74 +67,17 @@ BiBlock* newbiblock(Block* upper,Block* lower)
  * also initialised to NULL.
  * @author matthieu
  */
-Node* newNode() 
-{ 
-    // Allocate memory for new node  
-    struct Node* node = (struct Node*)malloc(sizeof(struct Node)); 
+Node *newNode() {
+  // Allocate memory for new node
+  struct Node *node = (struct Node *) malloc(sizeof(struct Node));
 
-    // Initialize block as null
-    node->block = NULL;
-    // Initialize left and right children as NULL 
-    node->left = NULL; 
-    node->right = NULL; 
-    return(node); 
+  // Initialize block as null
+  node->block = NULL;
+  // Initialize left and right children as NULL
+  node->left = NULL;
+  node->right = NULL;
+  return (node);
 }
-
-BiBlock* Xcut(Block* block,Coords* size,unsigned char M[size->x][size->y]);
-BiBlock* Ycut(Block* block,Coords* size,unsigned char M[size->x][size->y]);
-
-Node* __buildtreeX(Node* tree,
-                   Coords* size,
-                   unsigned char M[size->x][size->y],
-                   Coords* Osize,
-                   unsigned char opti[Osize->x][Osize->y]);
-Node* __buildtreeY(Node* tree,
-                   Coords* size,
-                   unsigned char M[size->x][size->y],
-                   Coords* Osize,
-                   unsigned char opti[Osize->x][Osize->y]);
-
-void printB(Block* block,Coords* coords, unsigned char M[coords->x][coords->y]);
-
-void printM(Coords* coords,
-            unsigned char M[coords->x][coords->y]);
-int isblack(size_t x, size_t y ,
-            Coords* coords,
-            unsigned char M[coords->x][coords->y]);
-void optiM(Coords* Msize,
-            Coords* Osize,
-            unsigned char M[Msize->y][Msize->x],
-            unsigned char opti[Osize->y][Osize->x]);
-
-Node* seg(Coords* size,unsigned char M[size->x][size->y]);
-
-void printcoords(Block* block);
-void block_to_mat(Block* block,
-                  Coords* size,
-                  unsigned char M[size->x][size->y],
-                  Coords* sizeMat,
-                  unsigned char Mat[sizeMat->x][sizeMat->y]);
-
-void hori_histo(unsigned int ext[],
-                Block* block,
-                size_t histolen,
-                Coords* size,
-                unsigned char img[size->y][size->x]);
-void vert_histo(Block* block,
-                size_t histolen,
-                unsigned int ext[],
-                Coords* size,
-                unsigned char img[size->y][size->x]);
-void letter_seg(Block* block,
-                Coords* size,
-                unsigned char img[size->y][size->x]);
-void word_seg(Block* block,
-              Coords* size,
-              unsigned char img[size->y][size->x]);
-void line_seg(Block* block,
-              Coords* size,
-              unsigned char img[size->y][size->x]);
-
 
 /**
  * 
@@ -179,26 +85,21 @@ void line_seg(Block* block,
  * genaration(sadly it appear to be sligthly broken at the moment)
  * 
  */
-void generate( size_t sizex, size_t sizey,unsigned char image[sizey][sizex]) 
-{
-    srand((unsigned int)time(NULL));
-    size_t i, j;
-    for ( i=1; i < sizey-1; ++i) 
-    {
-        for ( j=1; j < sizex-1; j++) 
-        {
-            image[i][j] = rand() % 2;
+void generate(size_t sizex, size_t sizey, unsigned char image[sizey][sizex]) {
+  srand((unsigned int) time(NULL));
+  size_t i, j;
+  for (i = 1; i < sizey - 1; ++i) {
+    for (j = 1; j < sizex - 1; j++) {
+      image[i][j] = rand() % 2;
 
-        }
-    } 
-
-    for (size_t y = 1; y < sizex-1; y++)
-    {
-        image[0][y]=0;
-        image[sizey-1][y]=0;
     }
-} 
+  }
 
+  for (size_t y = 1; y < sizex - 1; y++) {
+    image[0][y] = 0;
+    image[sizey - 1][y] = 0;
+  }
+}
 
 /**
  * 
@@ -213,24 +114,20 @@ void generate( size_t sizex, size_t sizey,unsigned char image[sizey][sizex])
  * by the fonction.
  */
 void hori_histo(unsigned int ext[],
-                Block* block,
+                Block *block,
                 size_t histolen,
-                Coords* size,
-                unsigned char img[size->y][size->x])
-{
+                Coords *size,
+                unsigned char img[size->y][size->x]) {
 
-  for (unsigned int y = 0; y < histolen; y++) 
-  {
+  for (unsigned int y = 0; y < histolen; y++) {
     ext[y] = 0;
-    for (unsigned int x = block->upperx; x <= block->lowerx; x++) 
-    {
-      ext[y] += img[y+block->uppery][x];
+    for (unsigned int x = block->upperx; x <= block->lowerx; x++) {
+      ext[y] += img[y + block->uppery][x];
       //printf("%u",img[y][x]);
     }
     //printf("\n");
   }
 }
-
 
 /**
  * 
@@ -243,80 +140,68 @@ void hori_histo(unsigned int ext[],
  * @param size struct that contains the size (x,y) of img[y][x]
  * 
  */
-void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
-{
-    /*
-    printB(block,size,img);
-    printf("line\n");
-    */
-    size_t histolen = block->lowery - block->uppery+1;
-    unsigned int ho_histo[histolen];
-    hori_histo(ho_histo,block,histolen,size,img);
-    char* ext ="";
-    char* link ="\n";
+void line_seg(Block *block, Coords *size, unsigned char img[size->y][size->x]) {
+  /*
+  printB(block,size,img);
+  printf("line\n");
+  */
+  size_t histolen = block->lowery - block->uppery + 1;
+  unsigned int ho_histo[histolen];
+  hori_histo(ho_histo, block, histolen, size, img);
+  char *ext = "";
+  char *link = "\n";
 
-    size_t y = block->uppery;
-    Block* sousblock = newblock(block->upperx,block->uppery,
-    block->lowerx,block->lowery);
+  size_t y = block->uppery;
+  Block *sousblock = newblock(block->upperx, block->uppery,
+                              block->lowerx, block->lowery);
 
-    while (y < block->lowery) 
-    {
-        if (ho_histo[y] != 0) 
-        {
-            sousblock->uppery = y;
-            while ((ho_histo[y] != 0)&&(y < block->lowery))
-            {
-                y += 1;
-            }
-            if(y < block->lowery)
-            {
-                y-=1;
-            }
-            sousblock->lowery = y;
-
-            /////////////////////////////////////////
-            /*
-            printB(sousblock,size,img);
-            printcoords(sousblock);
-            printf("L_seg histolen=%lu\n",histolen);
-            */
-            /////////////////////////////////////////
-            word_seg(sousblock, size, img);
-            if(strlen(ext)==0)
-            {
-                ext = concat2(ext,sousblock->M);
-            }
-            else
-            {
-                
-                ext = concat(ext,link,sousblock->M);
-            }
-            
-
-        }
+  while (y < block->lowery) {
+    if (ho_histo[y] != 0) {
+      sousblock->uppery = y;
+      while ((ho_histo[y] != 0) && (y < block->lowery)) {
         y += 1;
+      }
+      if (y < block->lowery) {
+        y -= 1;
+      }
+      sousblock->lowery = y;
+
+      /////////////////////////////////////////
+      /*
+      printB(sousblock,size,img);
+      printcoords(sousblock);
+      printf("L_seg histolen=%lu\n",histolen);
+      */
+      /////////////////////////////////////////
+      word_seg(sousblock, size, img);
+      if (strlen(ext) == 0) {
+        ext = concat2(ext, sousblock->M);
+      } else {
+
+        ext = concat(ext, link, sousblock->M);
+      }
+
     }
-    ext = concat(ext,link,link);
-    block->M = ext;
-    free(sousblock->M);
-    free(sousblock);
+    y += 1;
+  }
+  ext = concat(ext, link, link);
+  block->M = ext;
+  free(sousblock->M);
+  free(sousblock);
 
 
-    /*
-    for(size_t i =0; i< histolen; i++)
-    {
-        for (unsigned int y = 0; y< ho_histo[i]; y++)
-        {
-            printf("|");
-        }
-        printf("%u",ho_histo[i]);
-        printf("\n");
-    }
-    */
+  /*
+  for(size_t i =0; i< histolen; i++)
+  {
+      for (unsigned int y = 0; y< ho_histo[i]; y++)
+      {
+          printf("|");
+      }
+      printf("%u",ho_histo[i]);
+      printf("\n");
+  }
+  */
 }
-
-
-
 
 /**
  * 
@@ -328,127 +213,107 @@ void line_seg(Block* block,Coords* size, unsigned char img[size->y][size->x])
  * by the fonction.
  * @param size struct that contains the size (x,y) of img[y][x]
  */
-void word_seg(Block* block,
-              Coords* size,
-              unsigned char img[size->y][size->x])
-{
-    /*
-    printB(block,size,img);
-    printf("word\n");
-    */
+void word_seg(Block *block,
+              Coords *size,
+              unsigned char img[size->y][size->x]) {
+  /*
+  printB(block,size,img);
+  printf("word\n");
+  */
 
-    size_t histolen = block->lowerx - block->upperx+1;
-    unsigned int ver_histo[histolen];
-    vert_histo(block,histolen,ver_histo,size,img);
+  size_t histolen = block->lowerx - block->upperx + 1;
+  unsigned int ver_histo[histolen];
+  vert_histo(block, histolen, ver_histo, size, img);
 
-    char* ext ="";
-    char* link =" ";
-    
-    Block* sousblock = newblock(block->upperx,block->uppery,
-    block->lowerx,block->lowery);
+  char *ext = "";
+  char *link = " ";
 
-    size_t x = 0;
-    size_t height = block->lowery - block->uppery +1;
-    int space_finder;
-    int nbspace;
+  Block *sousblock = newblock(block->upperx, block->uppery,
+                              block->lowerx, block->lowery);
 
-    while (x < histolen) 
-    {
-        //printf("x=%lu",x);
-        if (ver_histo[x] != 0) 
-        {
+  size_t x = 0;
+  size_t height = block->lowery - block->uppery + 1;
+  int space_finder;
+  int nbspace;
 
-            sousblock->upperx = x+block->upperx;
-            space_finder = 1;
-            nbspace = 0;
-            while ((space_finder) && (x < histolen)) 
-            {
-                //printf(" x'=%lu\n",x);
-                if (ver_histo[x] == 0) 
-                {
-                    nbspace += 1;
-                    if (height/nbspace <= 4) 
-                    {
-                        space_finder = 0;
-                        sousblock->lowerx =block->upperx + x - nbspace;
+  while (x < histolen) {
+    //printf("x=%lu",x);
+    if (ver_histo[x] != 0) {
 
-                        /////////////////////////////////////////
-                        /*
-                        printB(sousblock,size,img);
-                        printcoords(sousblock);
-                        printf("w_seg histolen=%lu\n",histolen);
-                        */
-                        /////////////////////////////////////////
+      sousblock->upperx = x + block->upperx;
+      space_finder = 1;
+      nbspace = 0;
+      while ((space_finder) && (x < histolen)) {
+        //printf(" x'=%lu\n",x);
+        if (ver_histo[x] == 0) {
+          nbspace += 1;
+          if (height / nbspace <= 4) {
+            space_finder = 0;
+            sousblock->lowerx = block->upperx + x - nbspace;
 
-                        letter_seg(sousblock,size,img);
-                        if(strlen(ext)==0)
-                        {
-                            ext = concat2(ext,sousblock->M);
-                        }
-                        else
-                        {
-                            ext = concat(ext,link,sousblock->M);
-                        }
-                        
-                    }
-                }
-                x += 1;
+            /////////////////////////////////////////
+            /*
+            printB(sousblock,size,img);
+            printcoords(sousblock);
+            printf("w_seg histolen=%lu\n",histolen);
+            */
+            /////////////////////////////////////////
+
+            letter_seg(sousblock, size, img);
+            if (strlen(ext) == 0) {
+              ext = concat2(ext, sousblock->M);
+            } else {
+              ext = concat(ext, link, sousblock->M);
             }
-            if(x==histolen)
-            {
-                if(space_finder==0)
-                {
-                    sousblock->lowerx = block->lowerx;
-                }
-                else
-                {
-                    sousblock->lowerx = block->lowerx-nbspace;
-                }
-                /////////////////////////////////////////
-                /*
-                printB(sousblock,size,img);
-                printcoords(sousblock);
-                printf("w_seg histolen=%lu\n",histolen);
-                */
-                /////////////////////////////////////////
 
-                letter_seg(sousblock,size,img);
-                if(strlen(ext)==0)
-                {
-                    ext = concat2(ext,sousblock->M);
-                }
-                else
-                {
-                    ext = concat(ext,link,sousblock->M);
-                }
-                
-            }
+          }
         }
-        else 
-        {
-            x += 1;
+        x += 1;
+      }
+      if (x == histolen) {
+        if (space_finder == 0) {
+          sousblock->lowerx = block->lowerx;
+        } else {
+          sousblock->lowerx = block->lowerx - nbspace;
         }
+        /////////////////////////////////////////
+        /*
+        printB(sousblock,size,img);
+        printcoords(sousblock);
+        printf("w_seg histolen=%lu\n",histolen);
+        */
+        /////////////////////////////////////////
+
+        letter_seg(sousblock, size, img);
+        if (strlen(ext) == 0) {
+          ext = concat2(ext, sousblock->M);
+        } else {
+          ext = concat(ext, link, sousblock->M);
+        }
+
+      }
+    } else {
+      x += 1;
     }
-    block->M = ext;
-    free(sousblock->M);
-    free(sousblock);
+  }
+  block->M = ext;
+  free(sousblock->M);
+  free(sousblock);
 
 
-    /*
-    for(size_t i =0; i< histolen; i++)
-    {
-        for (unsigned int y = 0; y< ver_histo[i]; y++)
-        {
-            printf("|");
-        }
-        printf("%u",ver_histo[i]);
-        printf("\n");
-    }
-    */
+  /*
+  for(size_t i =0; i< histolen; i++)
+  {
+      for (unsigned int y = 0; y< ver_histo[i]; y++)
+      {
+          printf("|");
+      }
+      printf("%u",ver_histo[i]);
+      printf("\n");
+  }
+  */
 
 }
-
-
 
 /**
  * 
@@ -465,30 +330,26 @@ void word_seg(Block* block,
  * @param right specify from which indexe to end histogram
  * 
  */
-void vert_histo(Block* block,
+void vert_histo(Block *block,
                 size_t histolen,
                 unsigned int ext[],
-                Coords* size,
-                unsigned char img[size->y][size->x])
-                 {
+                Coords *size,
+                unsigned char img[size->y][size->x]) {
   size_t x, y;
   //printf("x=%lu y=%lu \nx'=%lu y'=%lu\n",block->upperx,block->uppery,block->lowerx,block->lowery);
   //printf("histolen=%lu\n",histolen);
-  for (x = 0; x < histolen; x++)
-  {
+  for (x = 0; x < histolen; x++) {
     ext[x] = 0;
     //printf("ext(%lu) = %u\n",x,ext[x]);
-    for (y = block->uppery; y <= block->lowery; y++)
-    {
+    for (y = block->uppery; y <= block->lowery; y++) {
 
-      ext[x] += img[y][x+block->upperx];
+      ext[x] += img[y][x + block->upperx];
       //printf("%u",img[y][x]);
     }
     //printf("\n");
     //printf("ext(%lu) = %u\n",x,ext[x]);
   }
 }
-
 
 /**
  * 
@@ -501,536 +362,463 @@ void vert_histo(Block* block,
  * @param size struct that contains the size (x,y) of img[y][x]
  * 
  */
-void letter_seg(Block* block,
-                Coords* size,
-                unsigned char img[size->y][size->x])
-{
-    /*
-    printB(block,size,img);
-    printf("letter\n");
-    printcoords(block);
-    */
+void letter_seg(Block *block,
+                Coords *size,
+                unsigned char img[size->y][size->x]) {
+  /*
+  printB(block,size,img);
+  printf("letter\n");
+  printcoords(block);
+  */
 
-    size_t histolen = block->lowerx - block->upperx+1;
-    unsigned int word_histo[histolen];
-    vert_histo(block,histolen,word_histo,size,img);
-    /*
-    printf("histo:\n");
-    for(size_t i =0; i< histolen;i++)
-    {
-        printf("%u\n",word_histo[i]);
-    }
-    */
+  size_t histolen = block->lowerx - block->upperx + 1;
+  unsigned int word_histo[histolen];
+  vert_histo(block, histolen, word_histo, size, img);
+  /*
+  printf("histo:\n");
+  for(size_t i =0; i< histolen;i++)
+  {
+      printf("%u\n",word_histo[i]);
+  }
+  */
 
-    char* ext ="";
-    
-    Block* sousblock = newblock(block->upperx,block->uppery,
-    block->lowerx,block->lowery);
+  char *ext = "";
 
-    size_t x = 0;
-    //size_t height = block->lowery - block->uppery +1;
-    size_t length = block->lowerx - block->upperx + 1;
-    //printf("lenght = %lu\n",length);
-    while (x < length)
-    {
-        if (word_histo[x] != 0)
-        {
-            sousblock->upperx = block->upperx + x;
-            while ((word_histo[x] != 0)&&(x < length))
-            {
-                x += 1;
-            }
-            sousblock->lowerx = block->upperx + x-1;
-            
-            /////////////////////////////////////////
-            /*
-            printB(sousblock,size,img);
-            printcoords(sousblock);
-            printf("l_seg histolen=%lu\n",histolen);
-            */
-            /////////////////////////////////////////
+  Block *sousblock = newblock(block->upperx, block->uppery,
+                              block->lowerx, block->lowery);
+
+  size_t x = 0;
+  //size_t height = block->lowery - block->uppery +1;
+  size_t length = block->lowerx - block->upperx + 1;
+  //printf("lenght = %lu\n",length);
+  while (x < length) {
+    if (word_histo[x] != 0) {
+      sousblock->upperx = block->upperx + x;
+      while ((word_histo[x] != 0) && (x < length)) {
+        x += 1;
+      }
+      sousblock->lowerx = block->upperx + x - 1;
+
+      /////////////////////////////////////////
+      /*
+      printB(sousblock,size,img);
+      printcoords(sousblock);
+      printf("l_seg histolen=%lu\n",histolen);
+      */
+      /////////////////////////////////////////
 
 
-            /* insert call to neural network */
-            Coords* sizeMat = newcoords();
-            sizeMat->x = sousblock->lowerx-sousblock->upperx +1;
-            sizeMat->y = sousblock->lowery-sousblock->uppery +1;
-            unsigned char Mat[sizeMat->x][sizeMat->y];
-            block_to_mat(sousblock,size,img,sizeMat,Mat);
+      /* insert call to neural network */
+      Coords *sizeMat = newcoords();
+      sizeMat->x = sousblock->lowerx - sousblock->upperx + 1;
+      sizeMat->y = sousblock->lowery - sousblock->uppery + 1;
+      unsigned char Mat[sizeMat->x][sizeMat->y];
+      block_to_mat(sousblock, size, img, sizeMat, Mat);
 
-            /* todo : insert call to neural network */
-
-            ext = concat2(ext,sousblock->M);
+      // Resize the array with gdk !
+      GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8,
+                                         sizeMat->x, sizeMat->y);
+      for (int i = 0; i < sizeMat->x; ++i) {
+        for (int j = 0; j < sizeMat->y; ++j) {
+          int d = Mat[i][j] * 255;
+          gtk_put_pixel(pixbuf, i, j, d, d, d, 255);
         }
-        else
-        {
-            x += 1;
-        }
-    }
-    //printf("%s\n",ext);
-    block->M = ext;
-    free(sousblock->M);
-    free(sousblock);
-}
-
-
-
-void printM(Coords* size, unsigned char M[size->x][size->y])
-{
-    size_t x,y;
-    for(y=0;y<size->y;y++)
-    {
-        printf("|");
-        for(x=0;x<size->x;x++)
-        {
-            printf("%i|",M[y][x]);
+      }
+      // Resize and fill array
+      GdkPixbuf *pxbscaled = gdk_pixbuf_scale_simple(pixbuf, 32, 32,
+                                                     GDK_INTERP_BILINEAR);
+      int n_channels = gdk_pixbuf_get_n_channels (pxbscaled);
+      int rowstride = gdk_pixbuf_get_rowstride (pxbscaled);
+      char *nn_inputs = calloc(1024, sizeof(char));
+      for (int i = 0; i < 32; ++i) {
+        for (int j = 0; j < 32; ++j) {
+          guchar *pixels = gdk_pixbuf_get_pixels (pxbscaled);
+          guchar *p = pixels + j * rowstride + i * n_channels;
+          nn_inputs[i * 32 + j] = p[0] == 255 ? 0 : 1;
+          printf("%i", nn_inputs[i * 32 + j]);
         }
         printf("\n");
+      }
+      printf("\n");
+
+      /* todo : insert call to neural network */
+
+      ext = concat2(ext, sousblock->M);
+    } else {
+      x += 1;
     }
+  }
+  //printf("%s\n",ext);
+  block->M = ext;
+  free(sousblock->M);
+  free(sousblock);
 }
 
-
-void printB(Block* block,Coords* size, unsigned char M[size->x][size->y])
-{
-    size_t x,y;
-    printf("****************************\n");
-    for(y=block->uppery;y<=block->lowery;y++)
-    {
-        printf("|");
-        for(x=block->upperx;x<=block->lowerx;x++)
-        {
-            printf("%i|",M[y][x]);
-        }
-        printf("\n");
+void printM(Coords *size, unsigned char M[size->x][size->y]) {
+  size_t x, y;
+  for (y = 0; y < size->y; y++) {
+    printf("|");
+    for (x = 0; x < size->x; x++) {
+      printf("%i|", M[y][x]);
     }
+    printf("\n");
+  }
 }
 
-
-void printcoords(Block* block)
-{
-    printf("upper: x=%lu y=%lu\n",block->upperx,block->uppery);
-    printf("lower: x=%lu y=%lu\n",block->lowerx,block->lowery);
+void printB(Block *block, Coords *size, unsigned char M[size->x][size->y]) {
+  size_t x, y;
+  printf("****************************\n");
+  for (y = block->uppery; y <= block->lowery; y++) {
+    printf("|");
+    for (x = block->upperx; x <= block->lowerx; x++) {
+      printf("%i|", M[y][x]);
+    }
+    printf("\n");
+  }
 }
 
-
-void optiM(Coords* Msize,
-            Coords* Osize,
-            unsigned char M[Msize->y][Msize->x],
-            unsigned char opti[Osize->y][Osize->x])
-{
-    size_t i,j;
-    size_t ibis,jbis;
-    for (j=0; j<Osize->y; j++)
-    {
-        for(i=0; i<Osize->x; i++)
-        {
-            opti[j][i]=0;
-        }
-    }
-
-
-    for (j=0; j<Osize->y; j++)
-    {
-        for(i=0; i<Osize->x; i++)
-        {
-            if(isblack(i*12,j*12,Msize,M)==1)
-            {
-                //opti[j][i]=isblack(i*12,j*12,Msize,M);
-                if (i==0)
-                {
-                    ibis = 0;
-                }
-                else
-                {
-                    ibis = i-1;
-                }
-                if (j==0)
-                {
-                    jbis = 0;
-                }
-                else
-                {
-                    jbis = i-1;
-                }
-                //printf("jbis = %lu\nibis = %lu\n",jbis,ibis);
-                while(jbis<=j+1)
-                {
-                    ibis = 0;
-                    //printf("entrer en boucle");
-                    while(ibis<=i+1)
-                    {
-                        if((jbis<Osize->y)&&(ibis<Osize->x))
-                        {
-                            opti[jbis][ibis]=1;
-                        }
-                        ibis+=1;
-                    }
-                    jbis+=1;
-                }
-
-            }
-        }
-    }
+void printcoords(Block *block) {
+  printf("upper: x=%lu y=%lu\n", block->upperx, block->uppery);
+  printf("lower: x=%lu y=%lu\n", block->lowerx, block->lowery);
 }
 
-
-int isblack(size_t x, size_t y ,
-            Coords* coords,
-            unsigned char M[coords->x][coords->y])
-{
-    int ext = 0;
-    size_t i = 1, j = 1, tmp = 3; 
-    while ((!ext && (y+j<coords->y)) &&(j<12))
-    {
-        if(tmp==1)
-        {
-            i=3;
-            tmp = 3;
-        }
-        else
-        {
-            i=1;
-            tmp = 1;
-        }
-        while ((!ext && (x+i<coords->x)) && (i<12))
-        {
-            if (M[j+y][i+x]==1)
-            {
-                ext = 1;
-            }
-            i+=4;
-        }
-        j+=2;
+void optiM(Coords *Msize,
+           Coords *Osize,
+           unsigned char M[Msize->y][Msize->x],
+           unsigned char opti[Osize->y][Osize->x]) {
+  size_t i, j;
+  size_t ibis, jbis;
+  for (j = 0; j < Osize->y; j++) {
+    for (i = 0; i < Osize->x; i++) {
+      opti[j][i] = 0;
     }
+  }
 
-    return ext;
+  for (j = 0; j < Osize->y; j++) {
+    for (i = 0; i < Osize->x; i++) {
+      if (isblack(i * 12, j * 12, Msize, M) == 1) {
+        //opti[j][i]=isblack(i*12,j*12,Msize,M);
+        if (i == 0) {
+          ibis = 0;
+        } else {
+          ibis = i - 1;
+        }
+        if (j == 0) {
+          jbis = 0;
+        } else {
+          jbis = i - 1;
+        }
+        //printf("jbis = %lu\nibis = %lu\n",jbis,ibis);
+        while (jbis <= j + 1) {
+          ibis = 0;
+          //printf("entrer en boucle");
+          while (ibis <= i + 1) {
+            if ((jbis < Osize->y) && (ibis < Osize->x)) {
+              opti[jbis][ibis] = 1;
+            }
+            ibis += 1;
+          }
+          jbis += 1;
+        }
+
+      }
+    }
+  }
 }
 
-
-BiBlock* Xcut(Block* block,Coords* size,unsigned char M[size->x][size->y])
-{
-    size_t i=block->upperx,j=block->uppery;
-    int first = 0;
-    int second = 0;
-    int sum=0;
-    Block* block1 = block;
-    Block* block2 = NULL;
-    while((i<=block->lowerx)&&(!second))
-    {
-        j=block->uppery;
-        sum=0;
-        while((j<=block->lowery)&&(first==1))
-        {
-            if(M[j][i]==1)
-            {
-                sum += 1;
-                break;
-            }
-            j+=1;
-        }
-        if((sum==0)&&(first==1))
-        {
-            block1->lowerx = i-1;
-            first=2;
-        }
-   
-        while((j<=block->lowery)&&(first==0))
-        {
-            if(M[j][i]==1)
-            {
-                first = 1;
-                block1 = newblock(i,block->uppery,block->lowerx,block->lowery);
-            }
-            j+=1;
-        }
-        
-        while(((j<=block->lowery)&&(!second))&&(first==2))
-        {
-            if(M[j][i]==1)
-            {
-                second = 1;
-                block2 = newblock(i,block->uppery,block->lowerx,block->lowery);
-            }
-            j+=1;
-        }      
-        i+=1;
+int isblack(size_t x, size_t y,
+            Coords *coords,
+            unsigned char M[coords->x][coords->y]) {
+  int ext = 0;
+  size_t i = 1, j = 1, tmp = 3;
+  while ((!ext && (y + j < coords->y)) && (j < 12)) {
+    if (tmp == 1) {
+      i = 3;
+      tmp = 3;
+    } else {
+      i = 1;
+      tmp = 1;
     }
-    BiBlock* ext = newbiblock(block1,block2);
-    return ext;
+    while ((!ext && (x + i < coords->x)) && (i < 12)) {
+      if (M[j + y][i + x] == 1) {
+        ext = 1;
+      }
+      i += 4;
+    }
+    j += 2;
+  }
+
+  return ext;
 }
 
-
-BiBlock* Ycut(Block* block,Coords* size,unsigned char M[size->x][size->y])
-{
-    size_t i=block->upperx,j=block->uppery;
-    int first = 0;
-    int second = 0;
-    int sum=0;
-    Block* block1 = block;
-    Block* block2 = NULL;
-    while((j<=block->lowery)&&(!second))
-    {
-        i=block->upperx;
-        sum=0;
-        while((i<=block->lowerx)&&(first==1))
-        {
-            if(M[j][i]==1)
-            {
-                sum += 1;
-                break;
-            }
-            i+=1;
-        }
-        if((sum==0)&&(first==1))
-        {
-            block1->lowery = j-1;
-            first=2;
-        }
-   
-        while((i<=block->lowerx)&&(first==0))
-        {
-            if(M[j][i]==1)
-            {
-                first = 1;
-                block1 = newblock(block->upperx,j,block->lowerx,block->lowery);
-            }
-            i+=1;
-        }
-        
-        while(((i<=block->lowerx)&&(!second))&&(first==2))
-        {
-            if(M[j][i]==1)
-            {
-                second = 1;
-                block2 = newblock(block->upperx,j,block->lowerx,block->lowery);
-            }
-            i+=1;
-        }      
-        j+=1;
+BiBlock *Xcut(Block *block, Coords *size, unsigned char M[size->x][size->y]) {
+  size_t i = block->upperx, j = block->uppery;
+  int first = 0;
+  int second = 0;
+  int sum = 0;
+  Block *block1 = block;
+  Block *block2 = NULL;
+  while ((i <= block->lowerx) && (!second)) {
+    j = block->uppery;
+    sum = 0;
+    while ((j <= block->lowery) && (first == 1)) {
+      if (M[j][i] == 1) {
+        sum += 1;
+        break;
+      }
+      j += 1;
     }
-    BiBlock* ext = newbiblock(block1,block2);
-    return ext;
+    if ((sum == 0) && (first == 1)) {
+      block1->lowerx = i - 1;
+      first = 2;
+    }
+
+    while ((j <= block->lowery) && (first == 0)) {
+      if (M[j][i] == 1) {
+        first = 1;
+        block1 = newblock(i, block->uppery, block->lowerx, block->lowery);
+      }
+      j += 1;
+    }
+
+    while (((j <= block->lowery) && (!second)) && (first == 2)) {
+      if (M[j][i] == 1) {
+        second = 1;
+        block2 = newblock(i, block->uppery, block->lowerx, block->lowery);
+      }
+      j += 1;
+    }
+    i += 1;
+  }
+  BiBlock *ext = newbiblock(block1, block2);
+  return ext;
 }
 
+BiBlock *Ycut(Block *block, Coords *size, unsigned char M[size->x][size->y]) {
+  size_t i = block->upperx, j = block->uppery;
+  int first = 0;
+  int second = 0;
+  int sum = 0;
+  Block *block1 = block;
+  Block *block2 = NULL;
+  while ((j <= block->lowery) && (!second)) {
+    i = block->upperx;
+    sum = 0;
+    while ((i <= block->lowerx) && (first == 1)) {
+      if (M[j][i] == 1) {
+        sum += 1;
+        break;
+      }
+      i += 1;
+    }
+    if ((sum == 0) && (first == 1)) {
+      block1->lowery = j - 1;
+      first = 2;
+    }
 
-Node* __buildtreeX(Node* tree,
-                   Coords* size,
+    while ((i <= block->lowerx) && (first == 0)) {
+      if (M[j][i] == 1) {
+        first = 1;
+        block1 = newblock(block->upperx, j, block->lowerx, block->lowery);
+      }
+      i += 1;
+    }
+
+    while (((i <= block->lowerx) && (!second)) && (first == 2)) {
+      if (M[j][i] == 1) {
+        second = 1;
+        block2 = newblock(block->upperx, j, block->lowerx, block->lowery);
+      }
+      i += 1;
+    }
+    j += 1;
+  }
+  BiBlock *ext = newbiblock(block1, block2);
+  return ext;
+}
+
+Node *__buildtreeX(Node *tree,
+                   Coords *size,
                    unsigned char M[size->x][size->y],
-                   Coords* Osize,
-                   unsigned char opti[Osize->x][Osize->y])
-{
-    
-    BiBlock* children = Xcut(tree->block,Osize,opti);
-    if(children->lower!=NULL)
-    {
-        tree->left = newNode();
-        tree->right = newNode();
-        tree->left->block = children->upper;
-        tree->right->block = children->lower;
-        tree->left = __buildtreeY(tree->left,size,M,Osize,opti);
-        tree->right = __buildtreeY(tree->right,size,M,Osize,opti);
-        return tree;
-    }
-    else
-    {
-        tree->block =children->upper;
-        children = Ycut(tree->block,Osize,opti);
-        if (children->lower!=NULL)
-        {
-            tree->left = newNode();
-            tree->right = newNode();
-            tree->left->block = children->upper;
-            tree->right->block = children->lower;
-            tree->left = __buildtreeX(tree->left,size,M,Osize,opti);
-            tree->right = __buildtreeX(tree->right,size,M,Osize,opti);
-        }
-        else
-        {
-            tree->block =children->upper;
-            tree->block = newblock(tree->block->upperx*12,tree->block->uppery*12,
-            tree->block->lowerx*12,tree->block->lowery*12);
-            line_seg(tree->block,size,M);
-            fileout(tree->block->M);
-        }
-        
+                   Coords *Osize,
+                   unsigned char opti[Osize->x][Osize->y]) {
 
-        ///////////////////////////////////////////////
-        /*
-        printB(tree->block,size,M);
-        printf("leaf\n");
-        */
-        ///////////////////////////////////////////////
-        return tree;
+  BiBlock *children = Xcut(tree->block, Osize, opti);
+  if (children->lower != NULL) {
+    tree->left = newNode();
+    tree->right = newNode();
+    tree->left->block = children->upper;
+    tree->right->block = children->lower;
+    tree->left = __buildtreeY(tree->left, size, M, Osize, opti);
+    tree->right = __buildtreeY(tree->right, size, M, Osize, opti);
+    return tree;
+  } else {
+    tree->block = children->upper;
+    children = Ycut(tree->block, Osize, opti);
+    if (children->lower != NULL) {
+      tree->left = newNode();
+      tree->right = newNode();
+      tree->left->block = children->upper;
+      tree->right->block = children->lower;
+      tree->left = __buildtreeX(tree->left, size, M, Osize, opti);
+      tree->right = __buildtreeX(tree->right, size, M, Osize, opti);
+    } else {
+      tree->block = children->upper;
+      tree->block = newblock(tree->block->upperx * 12,
+                             tree->block->uppery * 12,
+                             tree->block->lowerx * 12,
+                             tree->block->lowery * 12);
+      line_seg(tree->block, size, M);
+      fileout(tree->block->M);
     }
-    
+
+
+    ///////////////////////////////////////////////
+    /*
+    printB(tree->block,size,M);
+    printf("leaf\n");
+    */
+    ///////////////////////////////////////////////
+    return tree;
+  }
+
 }
 
-
-Node* __buildtreeY(Node* tree,
-                   Coords* size,
+Node *__buildtreeY(Node *tree,
+                   Coords *size,
                    unsigned char M[size->x][size->y],
-                   Coords* Osize,
-                   unsigned char opti[Osize->x][Osize->y])
-{
-    BiBlock* children = Ycut(tree->block,Osize,opti);
-    if(children->lower!=NULL)
-    {
-        tree->left = newNode();
-        tree->right = newNode();
-        tree->left->block = children->upper;
-        tree->right->block = children->lower;
-        tree->left = __buildtreeX(tree->left,size,M,Osize,opti);
-        tree->right = __buildtreeX(tree->right,size,M,Osize,opti);
-        return tree;
+                   Coords *Osize,
+                   unsigned char opti[Osize->x][Osize->y]) {
+  BiBlock *children = Ycut(tree->block, Osize, opti);
+  if (children->lower != NULL) {
+    tree->left = newNode();
+    tree->right = newNode();
+    tree->left->block = children->upper;
+    tree->right->block = children->lower;
+    tree->left = __buildtreeX(tree->left, size, M, Osize, opti);
+    tree->right = __buildtreeX(tree->right, size, M, Osize, opti);
+    return tree;
+  } else {
+    tree->block = children->upper;
+    children = Xcut(tree->block, Osize, opti);
+    if (children->lower != NULL) {
+      tree->left = newNode();
+      tree->right = newNode();
+      tree->left->block = children->upper;
+      tree->right->block = children->lower;
+      tree->left = __buildtreeY(tree->left, size, M, Osize, opti);
+      tree->right = __buildtreeY(tree->right, size, M, Osize, opti);
+    } else {
+      tree->block = children->upper;
+      tree->block = newblock(tree->block->upperx * 12,
+                             tree->block->uppery * 12,
+                             tree->block->lowerx * 12,
+                             tree->block->lowery * 12);
+      line_seg(tree->block, size, M);
+      fileout(tree->block->M);
     }
-    else
-    {
-        tree->block =children->upper;
-        children = Xcut(tree->block,Osize,opti);
-        if (children->lower!=NULL)
-        {
-            tree->left = newNode();
-            tree->right = newNode();
-            tree->left->block = children->upper;
-            tree->right->block = children->lower;
-            tree->left = __buildtreeY(tree->left,size,M,Osize,opti);
-            tree->right = __buildtreeY(tree->right,size,M,Osize,opti);
-        }
-        else
-        {
-            tree->block =children->upper;
-            tree->block = newblock(tree->block->upperx*12,tree->block->uppery*12,
-            tree->block->lowerx*12,tree->block->lowery*12);
-            line_seg(tree->block,size,M);
-            fileout(tree->block->M);
-        }
-        ///////////////////////////////////////////////
-        /*
-        printB(tree->block,size,M);
-        printf("leaf\n");
-        */
-        ///////////////////////////////////////////////
-        return tree;
-    }
-    
+    ///////////////////////////////////////////////
+    /*
+    printB(tree->block,size,M);
+    printf("leaf\n");
+    */
+    ///////////////////////////////////////////////
+    return tree;
+  }
+
 }
 
+Node *seg(Coords *size, unsigned char M[size->x][size->y]) {
+  remove("data/tmp/out.txt");
+  Node *root = newNode();
+  Coords *Osize = newcoords();
+  if (size->x % 12 == 0) {
+    Osize->x = size->x / 12;
+  } else {
+    Osize->x = size->x / 12 + 1;
+  }
+  if (size->y % 12 == 0) {
+    Osize->y = size->y / 12;
+  } else {
+    Osize->y = size->y / 12 + 1;
+  }
+  unsigned char opti[Osize->x][Osize->y];
+  optiM(size, Osize, M, opti);
 
-Node* seg(Coords* size,unsigned char M[size->x][size->y])
-{
-    remove("data/tmp/out.txt");
-    Node* root = newNode();
-    Coords* Osize = newcoords();
-    if (size->x%12==0)
-    {
-        Osize->x = size->x/12;
-    }
-    else
-    {
-        Osize->x = size->x/12 +1;
-    }
-    if (size->y%12==0)
-    {
-        Osize->y = size->y/12;
-    }
-    else
-    {
-        Osize->y = size->y/12 +1;
-    }
-    unsigned char opti[Osize->x][Osize->y];
-    optiM(size,Osize,M,opti);
-
-    root->block = newblock(0,0,Osize->x-1,Osize->y-1);
-    root = __buildtreeX(root,size,M,Osize,opti);
-    //printB(root->block,size,M);
-    return root;
+  root->block = newblock(0, 0, Osize->x - 1, Osize->y - 1);
+  root = __buildtreeX(root, size, M, Osize, opti);
+  //printB(root->block,size,M);
+  return root;
 }
 
-char* concat(char *str1,char *link ,char *str2)
-{
-    size_t size = strlen(str1)+1+strlen(str2)+1;
-    char *str = malloc(size * sizeof(char));
-    if(str == NULL)
-    {
-        errx(1,"not enough memory!");
-    }
-    char *p = str;
-    while(*str1!=0)
-    {
-        *(p++) = *(str1++);
-    }
-    *(p++)=*link;
-    while(*str2 != 0)
-    {
-        *(p++)=*(str2++);
-    }
-    *p = 0;
-    return str;
+char *concat(char *str1, char *link, char *str2) {
+  size_t size = strlen(str1) + 1 + strlen(str2) + 1;
+  char *str = malloc(size * sizeof(char));
+  if (str == NULL) {
+    errx(1, "not enough memory!");
+  }
+  char *p = str;
+  while (*str1 != 0) {
+    *(p++) = *(str1++);
+  }
+  *(p++) = *link;
+  while (*str2 != 0) {
+    *(p++) = *(str2++);
+  }
+  *p = 0;
+  return str;
 }
 
-char* concat2(char *str1,char *str2)
-{
-    size_t size = strlen(str1)+1+strlen(str2)+1;
-    char *str = malloc(size * sizeof(char));
-    if(str == NULL)
-    {
-        errx(1,"not enough memory!");
-    }
-    char *p = str;
-    while(*str1!=0)
-    {
-        *(p++) = *(str1++);
-    }
-    while(*str2 != 0)
-    {
-        *(p++)=*(str2++);
-    }
-    *p = 0;
-    return str;
+char *concat2(char *str1, char *str2) {
+  size_t size = strlen(str1) + 1 + strlen(str2) + 1;
+  char *str = malloc(size * sizeof(char));
+  if (str == NULL) {
+    errx(1, "not enough memory!");
+  }
+  char *p = str;
+  while (*str1 != 0) {
+    *(p++) = *(str1++);
+  }
+  while (*str2 != 0) {
+    *(p++) = *(str2++);
+  }
+  *p = 0;
+  return str;
 }
 
-void freetree(Node* tree)
-{
-    if(tree->left!=NULL)
-    {
-        freetree(tree->left);
-    }
-    if(tree->right!=NULL)
-    {
-        freetree(tree->right);
-    }
-    if(tree->block->M!=NULL)
-    {
-        free(tree->block->M);
-    }
-    free(tree->block);
-    free(tree);
+void freetree(Node *tree) {
+  if (tree->left != NULL) {
+    freetree(tree->left);
+  }
+  if (tree->right != NULL) {
+    freetree(tree->right);
+  }
+  if (tree->block->M != NULL) {
+    free(tree->block->M);
+  }
+  free(tree->block);
+  free(tree);
 }
 
-void block_to_mat(Block* block,
-    Coords* size,
-    unsigned char M[size->x][size->y],
-    Coords* sizeMat,
-    unsigned char Mat[sizeMat->x][sizeMat->y])
-{
-    size_t x,y;
-    for(y=0;y<sizeMat->y;y++)
-    {
-        for(x=0;x<sizeMat->x;x++)
-        {
-            Mat[x][y]=M[x+block->upperx][y+block->uppery];
-        }
+void block_to_mat(Block *block,
+                  Coords *size,
+                  unsigned char M[size->x][size->y],
+                  Coords *sizeMat,
+                  unsigned char Mat[sizeMat->x][sizeMat->y]) {
+  size_t x, y;
+  for (y = 0; y < sizeMat->y; y++) {
+    for (x = 0; x < sizeMat->x; x++) {
+      Mat[x][y] = M[x + block->upperx][y + block->uppery];
     }
+  }
 }
 
-void fileout(char *str)
-{
-    FILE *fp;
-    fp = fopen("data/tmp/out.txt","a+");
-    if(fp==NULL)
-    {
-        errx(1,"unable to access file or it doesn't exist");
-    }
-    fputs(str,fp);
-    fclose(fp);
+void fileout(char *str) {
+  FILE *fp;
+  fp = fopen("data/tmp/out.txt", "a+");
+  if (fp == NULL) {
+    errx(1, "unable to access file or it doesn't exist");
+  }
+  fputs(str, fp);
+  fclose(fp);
 }
