@@ -57,4 +57,5 @@ void gtk_bradley(unsigned int t,
       gtk_put_pixel(pixbuf, i, j, new_p, new_p, new_p, 255);
     }
   }
+  free(intImg);
 }

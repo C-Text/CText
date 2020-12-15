@@ -50,6 +50,7 @@ void on_file_selected(__attribute__ ((unused))GtkButton *button,
   gchar *filename = gtk_file_chooser_get_filename(widgets->w_dlg_file_choose);
   widgets->pix_buf = gdk_pixbuf_new_from_file(filename, NULL);
   gtk_grayscale(widgets->pix_buf);
+  widgets->raw_buf = gdk_pixbuf_copy(widgets->pix_buf);
   resize_image(GTK_WIDGET(widgets->layout_img), NULL, widgets);
   g_signal_connect(widgets->layout_img,
                    "size-allocate",
@@ -69,15 +70,27 @@ void on_choose_bin(__attribute__ ((unused))GtkComboBoxText *button,
                    app_widgets *widgets) {
   gtk_widget_set_sensitive(GTK_WIDGET(widgets->btn_next), TRUE);
   gchar *selected = gtk_combo_box_text_get_active_text(widgets->btn_deroul);
+  widgets->pix_buf = gdk_pixbuf_copy(widgets->raw_buf);
   if (selected[3] == 'u') {
+    gtk_widget_set_visible(GTK_WIDGET(widgets->brad_box), FALSE);
     gtk_otsu_binarization(widgets->pix_buf);
   } else {
-    //gtk_bradley(t, s, widgets->pix_buf);
-    g_print("s: %u, t: %u\n",
-            gtk_spin_button_get_value_as_int(widgets->btn_s),
-            gtk_spin_button_get_value_as_int(widgets->btn_t));
+    gtk_widget_set_visible(GTK_WIDGET(widgets->brad_box), TRUE);
+    int t = gtk_spin_button_get_value_as_int(widgets->btn_t);
+    int s = gtk_spin_button_get_value_as_int(widgets->btn_s);
+    gtk_bradley(t, s, widgets->pix_buf);
   }
 
+  resize_image(GTK_WIDGET(widgets->layout_img), NULL, widgets);
+}
+
+void bradlay_param_changed(__attribute__ ((unused))GtkSpinButton *spin_button,
+                           app_widgets *widgets) {
+  widgets->pix_buf = gdk_pixbuf_copy(widgets->raw_buf);
+  int t = gtk_spin_button_get_value_as_int(widgets->btn_t);
+  int s = gtk_spin_button_get_value_as_int(widgets->btn_s);
+  g_print("t: %u, s: %u\n", t, s);
+  gtk_bradley(t, s, widgets->pix_buf);
   resize_image(GTK_WIDGET(widgets->layout_img), NULL, widgets);
 }
 
@@ -111,6 +124,7 @@ int launch_application(int argc, char **argv) {
       GTK_IMAGE(gtk_builder_get_object(builder, IMG_PREVIEWER));
   widgets->btn_s = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, S_BTN));
   widgets->btn_t = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, T_BTN));
+  widgets->brad_box = GTK_BOX(gtk_builder_get_object(builder, "brad_box"));
 
   // Connect signals
   gtk_builder_connect_signals(builder, widgets);
@@ -131,6 +145,14 @@ int launch_application(int argc, char **argv) {
   g_signal_connect(widgets->btn_deroul,
                    "changed",
                    G_CALLBACK(on_choose_bin),
+                   widgets);
+  g_signal_connect(widgets->btn_s,
+                   "value-changed",
+                   G_CALLBACK(bradlay_param_changed),
+                   widgets);
+  g_signal_connect(widgets->btn_t,
+                   "value-changed",
+                   G_CALLBACK(bradlay_param_changed),
                    widgets);
 
   gtk_widget_show(widgets->w_main);

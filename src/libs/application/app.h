@@ -15,8 +15,10 @@ typedef struct {
   GtkComboBoxText *btn_deroul;            // Combo Box Text buton
   GtkImage *img_previewer;                // Image previewer on the main window
   GdkPixbuf *pix_buf;                     // Pixel Buffer to scale the image
+  GdkPixbuf *raw_buf;                     // Copy if pixbuf
   GtkLayout *layout_img;
   int step;
+  GtkBox *brad_box;
   GtkSpinButton *btn_s;
   GtkSpinButton *btn_t;
 } app_widgets;
