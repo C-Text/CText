@@ -2,8 +2,8 @@
 #include "bradley.h"
 #include "pixel_operations.h"
 
-void gtk_bradley(unsigned int t,
-                     unsigned int s,
+void gtk_bradley(int t,
+                     int s,
                      GdkPixbuf *pixbuf) {
   int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
   int w = gdk_pixbuf_get_width(pixbuf);
@@ -14,9 +14,9 @@ void gtk_bradley(unsigned int t,
   unsigned int x1, x2, y1, y2;
   unsigned int *intImg = malloc(sizeof(unsigned int) * w * h);
 
-  for (unsigned int i = 0; i < w; i++) {
+  for (int i = 0; i < w; i++) {
     sum = 0;
-    for (unsigned int j = 0; j < h; j++) {
+    for (int j = 0; j < h; j++) {
       guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
       guchar *p = pixels + j * rowstride + i * n_channels;
       sum += p[0];

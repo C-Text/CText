@@ -557,22 +557,8 @@ void letter_seg(Block* block,
             sizeMat->y = sousblock->lowery-sousblock->uppery +1;
             unsigned char Mat[sizeMat->x][sizeMat->y];
             block_to_mat(sousblock,size,img,sizeMat,Mat);
-            
 
-            int start_width = sizeMat->y, start_height = sizeMat->x;
-            int end_width = 32, end_height = 32;
-
-            GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE,
-            8, start_width, start_height);
-            for (int i = 0; i < start_width; ++i)
-            {
-                for (int j = 0; j < start_height; ++j) {
-//                    int d = data[i * start_width + j] * 255;
-//                    gtk_put_pixel(pixbuf, i, j, r, v, b, 255);
-                }
-            }
-
-            /* insert call to neural network */
+            /* todo : insert call to neural network */
 
             ext = concat2(ext,sousblock->M);
         }
