@@ -71,18 +71,29 @@ void training() {
   double **models = malloc(sizeof(char *) * 74);
   double *expected = malloc(sizeof(double) * 74);
 
-  char paths[] = "src/assets/font-01/letter000.bmp";
+  char paths[] = "src/assets/training/font-01/letter000.bmp";
 
   int index_in = 0;
-  for (int m = 0; m < 74; m++) {
-    SDL_Surface *image = SDL_LoadBMP(paths);
-    models[index_in] = get_matrix(image);
-    index_in++;
-    if (paths[27] == '9') {
-      paths[27] = '0';
-      paths[26]++;
+  for (int m = 0; m < 22; m++) {
+    paths[36] = '0';
+    paths[35] = '0';
+
+    for (int m = 0; m < 74; m++) {
+      SDL_Surface *image = SDL_LoadBMP(paths);
+      models[index_in] = get_matrix(image);
+      index_in++;
+      if (paths[36] == '9') {
+        paths[36] = '0';
+        paths[35]++;
+      } else
+        paths[36]++;
+    }
+
+    if (paths[26] == '9') {
+      paths[26] = '0';
+      paths[25]++;
     } else
-      paths[27]++;
+      paths[26]++;
   }
 
   size_t nb_neurons_per_layer[4] = {
