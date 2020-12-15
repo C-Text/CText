@@ -70,18 +70,20 @@ void on_next(__attribute__ ((unused))GtkButton *button,
   int n_channels = gdk_pixbuf_get_n_channels(widgets->pix_buf);
   int rowstride = gdk_pixbuf_get_rowstride(widgets->pix_buf);
   guchar *pixels = gdk_pixbuf_get_pixels(widgets->pix_buf);
-  Coords size = {w, h};
-  unsigned char arr[size.x][size.y];
+  unsigned char arr[w][h];
 
   for (int j = 0; j < h; ++j) {
     for (int i = 0; i < w; ++i) {
       guchar *p = pixels + j * rowstride + i * n_channels;
       arr[i][j] = p[0] == 255 ? 0 : 1;
+      printf("%u", (int) arr[i][j]);
     }
+    printf("\n");
   }
-
-  seg(&size, arr);
-  widgets->step += 1;
+  Coords * c = newcoords();
+  c->x = w;
+  c->y = h;
+  seg(c, arr);
 }
 
 void on_choose_bin(__attribute__ ((unused))GtkComboBoxText *button,

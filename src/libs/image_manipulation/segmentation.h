@@ -34,6 +34,8 @@ typedef struct TreeNode {
 
 TreeNode *seg(Coords *size, unsigned char M[size->x][size->y]);
 
+Coords *newcoords();
+
 char *concat(char *str1, char *link, char *str2);
 char *concat2(char *str1, char *str2);
 void freetree(TreeNode *tree);

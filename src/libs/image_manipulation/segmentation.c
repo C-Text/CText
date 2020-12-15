@@ -418,10 +418,10 @@ void letter_seg(Block *block,
       // Resize the array with gdk !
       GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8,
                                          sizeMat->x, sizeMat->y);
-      for (int i = 0; i < sizeMat->x; ++i) {
-        for (int j = 0; j < sizeMat->y; ++j) {
+      for (size_t i = 0; i < sizeMat->x; ++i) {
+        for (size_t j = 0; j < sizeMat->y; ++j) {
           int d = Mat[i][j] * 255;
-          gtk_put_pixel(pixbuf, i, j, d, d, d, 255);
+          gtk_put_pixel(pixbuf, (int)i, (int)j, d, d, d, 255);
         }
       }
       // Resize and fill array
