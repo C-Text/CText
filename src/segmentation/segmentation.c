@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include <err.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 typedef struct Block
 {
@@ -37,6 +38,7 @@ typedef struct Node
 char* concat(char *str1,char *link ,char *str2);
 char* concat2(char *str1,char *str2);
 void freetree(Node* tree);
+void fileout(char *str);
 
 /**
  * 
@@ -144,6 +146,11 @@ void optiM(Coords* Msize,
 Node* seg(Coords* size,unsigned char M[size->x][size->y]);
 
 void printcoords(Block* block);
+void block_to_mat(Block* block,
+                  Coords* size,
+                  unsigned char M[size->x][size->y],
+                  Coords* sizeMat,
+                  unsigned char Mat[sizeMat->x][sizeMat->y]);
 
 void hori_histo(unsigned int ext[],
                 Block* block,
@@ -640,8 +647,29 @@ void letter_seg(Block* block,
             printf("l_seg histolen=%lu\n",histolen);
             */
             /////////////////////////////////////////
+
+
             /* insert call to neural network */
-            sousblock->M = "l";
+            Coords* sizeMat = newcoords();
+            sizeMat->x = sousblock->lowerx-sousblock->upperx +1;
+            sizeMat->y = sousblock->lowery-sousblock->uppery +1;
+            unsigned char Mat[sizeMat->x][sizeMat->y];
+            block_to_mat(sousblock,size,img,sizeMat,Mat);
+            
+
+            int start_width = sizeMat->y, start_heigth = sizeMat->x;
+            int end_width = 32, end_height = 32;
+
+            GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE,
+            8, start_width, start_height);
+            for (int i = 0; i < start_width; ++i)
+            {
+                for (int j = 0; j < start_height; ++j) {
+                    int d = data[i * start_width + j] * 255;
+                    gtk_put_pixel(pixbuf, i, j, d, d, d, 255);
+                }
+            }
+
             /* insert call to neural network */
 
             ext = concat2(ext,sousblock->M);
@@ -933,8 +961,8 @@ Node* __buildtreeX(Node* tree,
             tree->block =children->upper;
             tree->block = newblock(tree->block->upperx*12,tree->block->uppery*12,
             tree->block->lowerx*12,tree->block->lowery*12);
-
             line_seg(tree->block,size,M);
+            fileout(tree->block->M);
         }
         
 
@@ -986,6 +1014,7 @@ Node* __buildtreeY(Node* tree,
             tree->block = newblock(tree->block->upperx*12,tree->block->uppery*12,
             tree->block->lowerx*12,tree->block->lowery*12);
             line_seg(tree->block,size,M);
+            fileout(tree->block->M);
         }
         ///////////////////////////////////////////////
         /*
@@ -1090,6 +1119,21 @@ void freetree(Node* tree)
     free(tree);
 }
 
+void block_to_mat(Block* block,
+    Coords* size,
+    unsigned char M[size->x][size->y],
+    Coords* sizeMat,
+    unsigned char Mat[sizeMat->x][sizeMat->y])
+{
+    size_t x,y;
+    for(y=0;y<sizeMat->y;y++)
+    {
+        for(x=0;x<sizeMat->x;x++)
+        {
+            Mat[x][y]=M[x+block->upperx][y+block->uppery];
+        }
+    }
+}
 
 void fileout(char *str)
 {
