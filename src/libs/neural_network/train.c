@@ -102,7 +102,7 @@ void training() {
   NeuralNetwork network;
 
   init(&network, 4, nb_neurons_per_layer);
-  for (int i = 0; i < 10000; i++) {
+  for (int i = 0; i < 100000; i++) {
     if (i % 100 == 0) {
       printf("%d\n", i);
       save_neural_network(&network, "src/assets/trained-network.txt");
