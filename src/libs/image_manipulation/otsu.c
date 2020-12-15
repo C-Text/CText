@@ -48,9 +48,10 @@ void histo(unsigned int histo[256], GdkPixbuf *pixbuf) {
 
   int w = gdk_pixbuf_get_width (pixbuf);
   int h = gdk_pixbuf_get_height (pixbuf);
+  int rowstride = gdk_pixbuf_get_rowstride (pixbuf);
   for (int i = 0; i < w; i++)
     for (int j = 0; j < h; j++) {
-      int rowstride = gdk_pixbuf_get_rowstride (pixbuf);
+
       guchar *pixels = gdk_pixbuf_get_pixels (pixbuf);
 
       guchar *p = pixels + j * rowstride + i * n_channels;

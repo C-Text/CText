@@ -2,6 +2,7 @@
 #include "application.h"
 #include "../image_manipulation/grayscale.h"
 #include "../image_manipulation/otsu.h"
+#include "../image_manipulation/bradley.h"
 
 #define W_MAIN_ID     "org.ctext.main_window"
 #define W_DIALG_ID    "org.ctext.file_chooser"
@@ -10,6 +11,8 @@
 #define BTN_DEROUL    "org.ctext.btn_deroulant"
 #define IMG_PREVIEWER "org.ctext.img_previewer"
 #define LAYOUT_IMG    "org.ctext.layout_img"
+#define S_BTN         "org.ctext.bradley.s"
+#define T_BTN         "org.ctext.bradley.t"
 
 gboolean resize_image(GtkWidget *widget, GdkRectangle *allocation,
                       app_widgets *widgets) {
@@ -68,6 +71,11 @@ void on_choose_bin(__attribute__ ((unused))GtkComboBoxText *button,
   gchar *selected = gtk_combo_box_text_get_active_text(widgets->btn_deroul);
   if (selected[3] == 'u') {
     gtk_otsu_binarization(widgets->pix_buf);
+  } else {
+    //gtk_bradley(t, s, widgets->pix_buf);
+    g_print("s: %u, t: %u\n",
+            gtk_spin_button_get_value_as_int(widgets->btn_s),
+            gtk_spin_button_get_value_as_int(widgets->btn_t));
   }
 
   resize_image(GTK_WIDGET(widgets->layout_img), NULL, widgets);
@@ -101,6 +109,8 @@ int launch_application(int argc, char **argv) {
   widgets->step = 0;
   widgets->img_previewer =
       GTK_IMAGE(gtk_builder_get_object(builder, IMG_PREVIEWER));
+  widgets->btn_s = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, S_BTN));
+  widgets->btn_t = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, T_BTN));
 
   // Connect signals
   gtk_builder_connect_signals(builder, widgets);

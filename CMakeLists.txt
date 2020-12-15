@@ -50,7 +50,7 @@ add_executable(
         src/libs/neural_network/train.h
         src/libs/string/string.c
         src/libs/string/string.h
-)
+        src/libs/image_manipulation/bradley.c src/libs/image_manipulation/bradley.h)
 
 target_link_libraries(CText m ${SDL_LIBRARY} ${SDL_IMAGE_LIBRARIES} ${GTK3_LIBRARIES})
 

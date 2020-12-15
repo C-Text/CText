@@ -17,6 +17,8 @@ typedef struct {
   GdkPixbuf *pix_buf;                     // Pixel Buffer to scale the image
   GtkLayout *layout_img;
   int step;
+  GtkSpinButton *btn_s;
+  GtkSpinButton *btn_t;
 } app_widgets;
 
 
