@@ -42,6 +42,30 @@ double *get_matrix(SDL_Surface *image_surface) {
   return array;
 }
 
+int * to_nn_sized(GdkPixbuf *pixbuf) {
+  int *intput = malloc(sizeof(int) * 32*32);
+
+  int width = gdk_pixbuf_get_width(pixbuf);
+  int height = gdk_pixbuf_get_height(pixbuf);
+  int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
+
+  g_assert (gdk_pixbuf_get_colorspace(pixbuf) == GDK_COLORSPACE_RGB);
+  g_assert (gdk_pixbuf_get_bits_per_sample(pixbuf) == 8);
+  g_assert (gdk_pixbuf_get_has_alpha(pixbuf));
+  g_assert (n_channels == 4);
+
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+      guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
+
+      guchar *p = pixels + y * rowstride + x * n_channels;
+      intput[x * height + y] = p[0];
+    }
+  }
+  return intput;
+}
+
 void training() {
   // Save all images into an array
   double **models = malloc(sizeof(char *) * 74);
