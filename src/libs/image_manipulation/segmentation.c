@@ -61,22 +61,22 @@ BiBlock *newbiblock(Block *upper, Block *lower) {
 
 /**
  * 
- * initialize a new Node structure(binary tree) 
+ * initialize a new TreeNode structure(binary tree) 
  * with both children nodes initialized to NULL.
- * data contain within the node is a pointer to a block structure
+ * data contain within the TreeNode is a pointer to a block structure
  * also initialised to NULL.
  * @author matthieu
  */
-Node *newNode() {
-  // Allocate memory for new node
-  struct Node *node = (struct Node *) malloc(sizeof(struct Node));
+TreeNode *newNode() {
+  // Allocate memory for new TreeNode
+  struct TreeNode *TreeNode = (struct TreeNode *) malloc(sizeof(struct TreeNode));
 
   // Initialize block as null
-  node->block = NULL;
+  TreeNode->block = NULL;
   // Initialize left and right children as NULL
-  node->left = NULL;
-  node->right = NULL;
-  return (node);
+  TreeNode->left = NULL;
+  TreeNode->right = NULL;
+  return (TreeNode);
 }
 
 /**
@@ -429,18 +429,22 @@ void letter_seg(Block *block,
                                                      GDK_INTERP_BILINEAR);
       int n_channels = gdk_pixbuf_get_n_channels (pxbscaled);
       int rowstride = gdk_pixbuf_get_rowstride (pxbscaled);
-      char *nn_inputs = calloc(1024, sizeof(char));
+      double *nn_inputs = calloc(1024, sizeof(char));
       for (int i = 0; i < 32; ++i) {
         for (int j = 0; j < 32; ++j) {
           guchar *pixels = gdk_pixbuf_get_pixels (pxbscaled);
           guchar *p = pixels + j * rowstride + i * n_channels;
           nn_inputs[i * 32 + j] = p[0] == 255 ? 0 : 1;
-          printf("%i", nn_inputs[i * 32 + j]);
+          printf("%i", (int)nn_inputs[i * 32 + j]);
         }
         printf("\n");
       }
       printf("\n");
 
+      NeuralNetwork network;
+      load_neural_network(&network, "src/assets/trained-network.txt");
+      char c = predict(&network, nn_inputs);
+      sousblock->M = &c;
       /* todo : insert call to neural network */
 
       ext = concat2(ext, sousblock->M);
@@ -637,7 +641,7 @@ BiBlock *Ycut(Block *block, Coords *size, unsigned char M[size->x][size->y]) {
   return ext;
 }
 
-Node *__buildtreeX(Node *tree,
+TreeNode *__buildtreeX(TreeNode *tree,
                    Coords *size,
                    unsigned char M[size->x][size->y],
                    Coords *Osize,
@@ -684,7 +688,7 @@ Node *__buildtreeX(Node *tree,
 
 }
 
-Node *__buildtreeY(Node *tree,
+TreeNode *__buildtreeY(TreeNode *tree,
                    Coords *size,
                    unsigned char M[size->x][size->y],
                    Coords *Osize,
@@ -728,9 +732,9 @@ Node *__buildtreeY(Node *tree,
 
 }
 
-Node *seg(Coords *size, unsigned char M[size->x][size->y]) {
+TreeNode *seg(Coords *size, unsigned char M[size->x][size->y]) {
   remove("data/tmp/out.txt");
-  Node *root = newNode();
+  TreeNode *root = newNode();
   Coords *Osize = newcoords();
   if (size->x % 12 == 0) {
     Osize->x = size->x / 12;
@@ -786,7 +790,7 @@ char *concat2(char *str1, char *str2) {
   return str;
 }
 
-void freetree(Node *tree) {
+void freetree(TreeNode *tree) {
   if (tree->left != NULL) {
     freetree(tree->left);
   }
