@@ -38,7 +38,7 @@ Block *newblock(size_t upperx, size_t uppery, size_t lowerx, size_t lowery) {
   block->uppery = uppery;
   block->lowerx = lowerx;
   block->lowery = lowery;
-  block->M = "";
+  block->M = malloc(sizeof(char));
 
   return block;
 }
@@ -445,6 +445,7 @@ void letter_seg(Block *block,
       load_neural_network(&network, "src/assets/trained-network.txt");
       char c = predict(&network, nn_inputs);
       sousblock->M = &c;
+
       /* todo : insert call to neural network */
 
       ext = concat2(ext, sousblock->M);

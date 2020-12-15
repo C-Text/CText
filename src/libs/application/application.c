@@ -176,7 +176,5 @@ int launch_application(int argc, char **argv) {
 
   gtk_main();
 
-  g_free(widgets);
-
   return 0;
 }
