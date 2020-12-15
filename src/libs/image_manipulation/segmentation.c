@@ -200,104 +200,6 @@ void generate( size_t sizex, size_t sizey,unsigned char image[sizey][sizex])
 } 
 
 
-int main() 
-{
-    //size_t sizex = 60;
-    //size_t sizey = 60;
-    //unsigned char image[sizey][sizex];
-
-    //unsigned char image[][4]={ { 0,1,0,1 } , { 1,1,1,1 } ,{ 1,0,0,0 }};
-
-    //unsigned int test[60];
-    //unsigned int ptest = test;
-
-    //generate(sizex, sizey, image);
-    //line_seg(sizex, sizey, image);
-
-    //printf("%s\n",ext);
-    /*
-    unsigned char image[][14] = {
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,1,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,1,1,1,1,1,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,1,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,1,1,0,0,0,1,0,0,0,0,0,0},
-        {0,0,1,0,0,0,0,1,1,1,0,0,0,0},
-        {0,0,1,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,1,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,1,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-    };
-    */
-    /*
-    unsigned char image[][14] = {
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {0,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {0,0,1,1,1,1,1,1,1,1,1,1,1,1},
-        {0,0,0,1,1,1,1,1,1,1,1,1,1,1},
-        {0,0,0,0,1,1,1,1,1,1,1,1,1,1},
-        {0,0,0,0,0,1,1,1,1,1,1,1,1,1},
-        {0,0,0,0,0,0,1,1,1,1,1,1,1,1},
-        {0,0,0,0,0,0,0,1,1,1,1,1,1,1},
-        {0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-        {0,0,0,0,0,0,0,0,0,1,1,1,1,1},
-        {0,0,0,0,0,0,0,0,0,0,1,1,1,1},
-        {0,0,0,0,0,0,0,0,0,0,0,1,1,1},
-        {0,0,0,0,0,0,0,0,0,0,0,0,1,1},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,1}
-    };
-    */
-   /*
-    unsigned char image[][14] = {
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {1,1,0,1,0,0,0,0,0,0,0,0,0,0},
-        {1,1,1,1,1,1,0,0,0,0,0,1,1,1},
-        {1,0,0,0,0,0,0,0,0,0,0,1,1,1},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {1,0,1,0,1,0,0,0,1,0,0,0,0,0},
-        {1,1,0,1,0,0,0,1,1,1,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-    };
-
-    Coords* matsize = newcoords();
-    matsize->x = 14;
-    matsize->y = 14;
-    printM(matsize,image);
-    Block* test = newblock(0,0,matsize->x-1,matsize->y-1);
-    */
-    //seg(matsize,image);
-    
-    
-    /*
-    char i = 14/12+1;
-    unsigned char opi[i][i];
-    Coords* opmsize = optiM(matsize,image,opi);
-    printM(opmsize,opi);
-    */
-    
-    //word_seg(test,matsize,image);
-    //line_seg(test,matsize,image);
-    /*
-    test->M = "l";
-    char* ah = "ah";
-    char* link = "";
-    test->M = concat(test->M,link,ah);
-    */
-    //printf("%s\n",test->M);
-  return 0;
-}
-
-
 /**
  * 
  * Modify array into a histogram of a bit multidimensionnal array.
@@ -657,7 +559,7 @@ void letter_seg(Block* block,
             block_to_mat(sousblock,size,img,sizeMat,Mat);
             
 
-            int start_width = sizeMat->y, start_heigth = sizeMat->x;
+            int start_width = sizeMat->y, start_height = sizeMat->x;
             int end_width = 32, end_height = 32;
 
             GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE,
@@ -665,8 +567,8 @@ void letter_seg(Block* block,
             for (int i = 0; i < start_width; ++i)
             {
                 for (int j = 0; j < start_height; ++j) {
-                    int d = data[i * start_width + j] * 255;
-                    gtk_put_pixel(pixbuf, i, j, d, d, d, 255);
+//                    int d = data[i * start_width + j] * 255;
+//                    gtk_put_pixel(pixbuf, i, j, r, v, b, 255);
                 }
             }
 
